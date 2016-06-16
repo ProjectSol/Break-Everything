@@ -147,7 +147,7 @@ end
 
 function playerRotate(dt)
 	currentAngle = playerBody:getAngle()
-	targetAngle = math.angle(playerBody:getX(), playerBody:getY(), waypoint.x, waypoint.y) 
+	targetAngle = math.angle(playerBody:getX(), playerBody:getY(), waypoint.x, waypoint.y)
 	playerBody:setAngle(targetAngle)
 end
 
@@ -162,7 +162,7 @@ function love.draw()
 		end
 	end
 
-	love.graphics.setColor(72, 160, 14) -- set the drawing color to green for the ground
+	love.graphics.setColor(72, 160, 14) 
 	love.graphics.polygon("fill", ships.player.body:getWorldPoints(ships.player.shape:getPoints()))
 
 	love.graphics.setColor(193, 47, 14) --set the drawing color to red for the ball
