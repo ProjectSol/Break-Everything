@@ -1,8 +1,8 @@
 
 local radian = math.pi*2
-local currAngle = radian/2
-local targAngle = radian
-local diff = targ - a
+local currAngle = radian
+local targAngle = radian/2
+local diff = targAngle - currAngle
 local startTime = love.timer.getTime()
 local dur = (currAngle+targAngle)/player.speed
 

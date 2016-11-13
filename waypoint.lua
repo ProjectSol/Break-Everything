@@ -6,8 +6,11 @@ function waypoint:place()
   local newWaypoint = { x=x, y=y }
   waypoints = {}
   table.insert(waypoints, newWaypoint)
-  startTime = love.timer.getTime()
-  startAngle = playerBody:getAngle()
+  self.startTime = love.timer.getTime()
+  self.startAngle = playerBody:getAngle()
+  self.targAngle = self:angle()
+  self.turnRate = 0.7
+  self.valid = true
 end
 
 function waypoint:angle()
@@ -17,8 +20,13 @@ function waypoint:angle()
     local wY = waypoint.y
     local pX = ships.player.body:getX()
     local pY = ships.player.body:getY()
-    angle = math.angle(wX, wY, pX, pY)
+    self._angle = math.angle(wX, wY, pX, pY)
   end
+  return self._angle
+end
+
+function waypoint:getAngle()
+  return self._angle
 end
 
 return waypoint

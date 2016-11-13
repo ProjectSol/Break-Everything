@@ -62,24 +62,20 @@ function love.load()
 	playerBody = ships.player.body
 	playerShape = ships.player.shape
 	playerFixture = ships.player.fixture
+
+	playerBody:setAngle(0)
 end
 
 function love.update(dt)
 	world:update(dt)
-	if #waypoints > 0 then
-		waypoint.angle()
-		--[[if playerBody:getAngle() ~= angle+math.pi*1.5 then
-			playerBody:setAngle(angle+math.pi*1.5)
-		end]]
-	end
-	playerMovement:rotate()
+	--[[playerMovement:rotate1()
+	playerMovement:movement1()]]
+	playerMovement:rotate2()
 	playerMovement:movement()
 end
 
 function love.mousepressed(x, y, button)
-	print(waypoint.place)
-	waypoint.place()
-	run = true
+	waypoint:place()
 end
 
 function love.draw()
