@@ -4,25 +4,43 @@ function waypoint:place()
   local x = love.mouse.getX()
   local y = love.mouse.getY()
   local newWaypoint = { x=x, y=y }
+  waypointVec = vector(x,y)
+  print(waypointVec:unpack())
   waypoints = {}
   table.insert(waypoints, newWaypoint)
   self.startTime = love.timer.getTime()
   self.startAngle = playerBody:getAngle()
-  self.targAngle = self:angle()
+  self.targAngle = waypointVec:angleTo(playerVec)+math.pi/2
+  self.turnRate = 0.7
+  self.valid = true
+end
+
+function waypoint:place2()
+  local x, y = love.mouse.getPosition()
+  local waypoint = { x=x, y=y }
+  waypoints = {waypoint}
+  --table.insert(waypoints, newWaypoint)
+  self.startTime = love.timer.getTime()
+  self.startAngle = playerBody:getAngle()
+  self.targAngle = self:angle()+math.pi/2
   self.turnRate = 0.7
   self.valid = true
 end
 
 function waypoint:angle()
-  for i = 1,1 do
-    local waypoint = waypoints[i]
-    local wX = waypoint.x
-    local wY = waypoint.y
-    local pX = ships.player.body:getX()
-    local pY = ships.player.body:getY()
-    self._angle = math.angle(wX, wY, pX, pY)
-  end
+  local waypoint = waypoints[1]
+  local wX = waypoint.x
+  local wY = waypoint.y
+  local pX = playerBody:getX()
+  local pY = playerBody:getY()
+
+  self._angle = waypointVec:angleTo(playerVec)
+   --math.angle(wX, wY, pX, pY)
   return self._angle
+end
+
+function waypoint:setTargetAngle()
+
 end
 
 function waypoint:getAngle()

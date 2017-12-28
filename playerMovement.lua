@@ -18,9 +18,9 @@ end
 function playerMovement:movement()
 	local waypoint = waypoints[1]
 	if waypoint then
-		local angle = playerBody:getAngle() + math.pi
-		local playerDx =  ships.player.speed * math.cos(angle)
-		local playerDy = ships.player.speed * math.sin(angle)
+		local angle = playerBody:getAngle() --+ math.pi
+		local playerDx = 0--ships.player.speed * math.cos(angle)
+		local playerDy = ships.player.speed/100 * math.cos(angle)
     --print(playerDx, playerDy)
     ships.player.body:applyLinearImpulse(playerDx,playerDy)
   end
@@ -58,15 +58,17 @@ function playerMovement:rotate2()
 end
 
 
-function playerMovement:rotate()
+function playerMovement:rotate(dt)
   if waypoints[1] then
     waypoint:angle()
     local currAngle = playerBody:getAngle()
-    local targAngle = waypoint._angle
-    local diff = targAngle - currAngle
-    local dur = 32
-    local change = diff/dur
+    local targAngle = waypoint:angle()+math.pi/2
+    local diff = (targAngle - currAngle)*dt
+    --[[local dur = 32
+    local change = diff/dur]]
+
     currAngle = currAngle+(change)
+    print(targAngle, currAngle)
     playerBody:setAngle(currAngle)
   end
 end
@@ -75,14 +77,52 @@ function playerMovement:rotate1()
   if waypoint.valid then
     local sA = waypoint.startAngle
     local sT = waypoint.startTime
-    local tA = waypoint.targAngle
-    local rate = waypoint.turnRate
-    local diff = tA - sA
-    print( diff )
-    --if diff > math.pi then diff = (diff-math.pi) end
-    local p = math.min( (love.timer.getTime() - sT)/rate, 1 )
-    playerBody:setAngle( sA + diff*p )
+    local tA = waypoint.targAngle+math.pi*2
+    if sA == tA then
+
+    else
+      local rate = waypoint.turnRate
+      local diff = tA - sA
+      print( diff )
+      --if diff > math.pi then diff = (diff-math.pi) end
+      local p = math.min( (love.timer.getTime() - sT)/rate, 1 )
+      playerBody:setAngle( sA + diff*p )
+    end
   end
+end
+
+function playerMovement:rotate3()
+  if waypoint.valid then
+    local rotSpeed = player.turnSpeed/100
+    local sA = playerBody:getAngle()
+    local tA = waypoint:angle()
+    local diff = tA - sA
+    --[[if tA < sA then
+      direction = -1
+    else
+      direction = 1
+    end]]
+    if diff == 0 then
+      --playerBody:setAngle(sA)
+    elseif math.abs(diff) < rotSpeed then
+      playerBody:setAngle(sA+diff)
+    else
+      playerBody:setAngle(sA+rotSpeed)
+    end
+    print("StartAngle : "..sA)
+    print("TargetAngle: "..tA)
+    --playerBody:setAngle(sA+0.10)
+    --[[if sA >= 2*math.pi then
+      sA = sA-2*math.pi
+      playerBody:setAngle(sA)
+    end]]
+
+  end
+end
+
+function playerMovement:calcPlayerVector()
+  local playerVec = vector(shipsList.playerShip.x, shipsList.playerShip.y)
+  return playerVec
 end
 
 return playerMovement
