@@ -3,7 +3,19 @@ shipBuilder = {}
 ships = {}
 ships_mt = {__index = ships}
 
-counter = 1
+shipIdCounter = 1
+
+behave = {}
+behave.Neutral = nil
+
+behave.EnemyPreset1 = nil
+behave.EnemyPreset2 = nil
+
+behave.playerPreset1 = nil
+behave.playerPreset2 = nil
+behave.playerConfig1 = nil --customisable templates for automated action when the player ignores this ship.
+behave.playerConfig2 = nil
+behave.playerConfig3 = nil
 
 setmetatable(ships, {
   __call = function (cls, ...)
@@ -12,6 +24,7 @@ setmetatable(ships, {
     return self
   end,
 })
+
 function ships.create()
   local new_inst = {}    -- the new instance
   setmetatable( new_inst, ships_mt ) -- all instances share the same metatable
@@ -19,131 +32,112 @@ function ships.create()
 end
 
 function ships:_init()
-  self.id = counter
-  counter = counter+1
+  self.id = shipIdCounter
+  shipIdCounter = shipIdCounter+1
   self.name = "testShip"
   self.class = lightClass
-  self.speed = 1
-  self.turnSpeed = 1
-  self.x = 300+40*(self.id-1)
+  self.speed = 5
+  self.turnSpeed = 5
+  self.x = 30+50*(self.id-1)
+  self.behaviour = Neutral
   print(self.x)
   self.y = 300
+end
+
+function ships:playerShipInit()
+  self.speed = 15.5
+  self.turnSpeed = 3
+  self.selected = false
 end
 
 function ships:getShipPos()
   return self.x, self.y
 end
 
+function ships:placeWaypoint()
+  local x, y = love.mouse.getPosition()
+  waypointVec = vector(x,y)
+  self.waypoint = { x=x, y=y }
+  waypoints = {waypoint}
+  --table.insert(waypoints, newWaypoint)
+  self.validWaypoint = true
+end
+
 classes = {}
 classes.lightClass = {-20, -20, 20, -20, 0, 20}
 
---[[local BaseClass = {}
-BaseClass.__index = BaseClass
-
-setmetatable(BaseClass, {
-  __call = function (cls, ...)
-    local self = setmetatable({}, cls)
-    self:_init(...)
-    return self
-  end,
-})
-
-function BaseClass:_init(init)
-  self.value = init
-end
-
-function BaseClass:set_value(newval)
-  self.value = newval
-end
-
-function BaseClass:get_value()
-  return self.value
-end
-
----
-
-local DerivedClass = {}
-DerivedClass.__index = DerivedClass
-
-setmetatable(DerivedClass, {
-  __index = BaseClass, -- this is what makes the inheritance work
-  __call = function (cls, ...)
-    local self = setmetatable({}, cls)
-    self:_init(...)
-    return self
-  end,
-})
-
-function DerivedClass:_init(init1, init2)
-  BaseClass._init(self, init1) -- call the base class constructor
-  self.value2 = init2
-end
-
-function DerivedClass:get_value()
-  return self.value + self.value2
-end
-
-local i = DerivedClass(1, 2)
-print(i:get_value()) --> 3
-i:set_value(3)
-print(i:get_value()) --> 5]]
-
 function shipBuilder:genBasicPlayerShip()
-  shipsList.playerShip = ships.create()
-	shipsList.playerShip:_init()
+  local playerShip = ships.create()
 
-	--table.insert(playerShip, shipsList)
-  player = shipsList.playerShip
+  table.insert(shipsList, playerShip)
+  print(#shipsList)
+  for i = 1,#shipsList do
+    ship = shipsList[i]
+  end
+
+	ship:_init()
+  ship:playerShipInit()
+
+  player = ship
 
   local x,y = player:getShipPos()
   playerX = x
   playerY = y
 
 	--shipsList.playerShip = { --[[speed = playerShip.speed, turnSpeed = playerShip.turnSpeed]] }
-	shipsList.playerShip.body = love.physics.newBody( world, playerX, playerY, "dynamic")
-    playerBody = shipsList.playerShip.body
+	ship.body = love.physics.newBody( world, playerX, playerY, "dynamic")
+    playerBody = ship.body
 
-	shipsList.playerShip.shape = love.physics.newPolygonShape(unpack(classes.lightClass))--love.physics.newRectangleShape( 30, 40 )
-    playerShape = shipsList.playerShip.shape
+	ship.shape = love.physics.newPolygonShape(unpack(classes.lightClass))--love.physics.newRectangleShape( 30, 40 )
+    playerShape = ship.shape
 
-  shipsList.playerShip.fixture = love.physics.newFixture(playerBody, playerShape)
-    playerFixture = shipsList.playerShip.fixture
+  ship.fixture = love.physics.newFixture(playerBody, playerShape)
+    playerFixture = ship.fixture
 
 	playerBody:setAngle(0)
 end
 
 function shipBuilder:genBasicEnemyShip()
-  shipsList.basicEnemy = ships.create()
-	shipsList.basicEnemy:_init()
+  local basicShip = ships.create()
+
+  table.insert(shipsList, basicShip)
+  print(#shipsList)
+  for i = 1,#shipsList do
+    ship = shipsList[i]
+  end
+
+	ship:_init()
 
 	--table.insert(basicEnemy, shipsList)
-  basicEnemy = shipsList.basicEnemy
+  basicEnemy = ship
 
-  local x,y = basicEnemy:getShipPos()
+  local x,y = ship:getShipPos()
   basicEnemyX = x
   basicEnemyY = y
 
 	--shipsList.basicEnemy = { --[[speed = basicEnemy.speed, turnSpeed = basicEnemy.turnSpeed]] }
-	shipsList.basicEnemy.body = love.physics.newBody( world, basicEnemyX, basicEnemyY, "dynamic")
-    basicEnemyBody = shipsList.basicEnemy.body
+	ship.body = love.physics.newBody( world, basicEnemyX, basicEnemyY, "dynamic")
+    basicEnemyBody = ship.body
 
-	shipsList.basicEnemy.shape = love.physics.newPolygonShape(unpack(classes.lightClass))--love.physics.newRectangleShape( 30, 40 )
-    basicEnemyShape = shipsList.basicEnemy.shape
+	ship.shape = love.physics.newPolygonShape(unpack(classes.lightClass))--love.physics.newRectangleShape( 30, 40 )
+    basicEnemyShape = ship.shape
 
-  shipsList.basicEnemy.fixture = love.physics.newFixture(basicEnemyBody, basicEnemyShape)
-    basicEnemyFixture = shipsList.basicEnemy.fixture
+  ship.fixture = love.physics.newFixture(basicEnemyBody, basicEnemyShape)
+    basicEnemyFixture = shipsList.ship
 
 	basicEnemyBody:setAngle(0)
 end
 
-function basicObjects()
+function basicObject()
   objects.ball = {}
 	objects.ball.body = love.physics.newBody(world, 650/2, 200, "dynamic") --place the body in the center of the world and make it dynamic, so it can move around
 	objects.ball.shape = love.physics.newCircleShape(20) --the ball's shape has a radius of 20
 	objects.ball.fixture = love.physics.newFixture(objects.ball.body, objects.ball.shape, 1) -- Attach fixture to body and give it a density of 1.
 	--[[objects.ball.fixture:setRestitution(0.8) --let the ball bounce
 	objects.ball.body:setLinearDamping(0.05)]]
+end
 
+function basicWalls()
 	edge1 = {}
 	edge1.body = love.physics.newBody(world, 0, 0, "static")
 	edge1.edge = love.physics.newEdgeShape( 0, 0, 0, love.graphics:getHeight())
@@ -163,6 +157,18 @@ function basicObjects()
 	edge4.body = love.physics.newBody(world, 0, 0, "static")
 	edge4.edge = love.physics.newEdgeShape( 0, love.graphics:getHeight(), love.graphics:getWidth(), love.graphics:getHeight())
 	edge4.fixture = love.physics.newFixture(edge4.body, edge4.edge, 5)
+end
+
+function drawBasicShips()
+  for i = 1,#shipsList do
+    local ship = shipsList[i]
+    love.graphics.setLineWidth(2)
+    love.graphics.setColor(200,200,200)
+    love.graphics.polygon("line", ship.body:getWorldPoints(ship.shape:getPoints()))
+
+    --[[love.graphics.setColor(200, 200, 200)
+    love.graphics.polygon("line", shipsList.basicEnemy.body:getWorldPoints(shipsList.basicEnemy.shape:getPoints()))]]
+  end
 end
 
 

@@ -23,32 +23,26 @@ function love.load()
 	playerMovement = require "playerMovement"
 	shipBuilder = require "ships"
 
-	--love.mouse.setGrabbed(true)
-
 	shipsList = {}
-	--table.insert(playerShip, shipsList)
 
 	love.physics.setMeter(64)
 	world = love.physics.newWorld(0, 0, true)
 
-	basicObjects()
+	basicWalls()
 	shipBuilder:genBasicPlayerShip()
 	shipBuilder:genBasicEnemyShip()
+	shipBuilder:genBasicEnemyShip()
+	shipBuilder:genBasicEnemyShip()
+
 
 end
 
 function love.update(dt)
 	world:update(dt)
+
 	playerVec = playerMovement:calcPlayerVector()
-	playerMovement:rotate3(dt)
-	--waypoint:place()
-	--playerMovement:rotate1()
-	--playerMovement:movement1()
-	--playerMovement:rotate2()
-	--playerMovement:movement()
-	--[[
-		None of that works
-	]]
+	playerMovement:rotate(dt)
+	playerMovement:movement()
 
 	if love.keyboard.isDown('escape') then
 		love.event.push('quit')
@@ -57,7 +51,27 @@ end
 
 function love.mousepressed(x, y, button)
 	waypoint:place()
-	--waypoint:setTargetAngle()
+end
+
+function mouseGrabToggle()
+	if love.mouse.isGrabbed() then
+		love.mouse.setGrabbed(true)
+	else
+		love.mouse.setGrabbed(false)
+	end
+end
+
+function closestToZero(a, b, c, d, e, f)
+  local test = math.min(math.abs(a), math.abs(b), math.abs(c), math.abs(d))
+  if math.abs(a) == test then
+    return a
+  elseif math.abs(b) == test then
+    return b
+  elseif math.abs(c) == test then
+    return c
+  elseif math.abs(d) == test then
+    return d
+  end
 end
 
 function love.draw()
@@ -68,21 +82,23 @@ function love.draw()
 		love.graphics.circle("fill", waypoint.x, waypoint.y, 2)
 	end
 
-	love.graphics.setLineWidth(2)
+	--[[love.graphics.setLineWidth(2)
 	love.graphics.setColor(200,200,200)
 	love.graphics.polygon("line", playerBody:getWorldPoints(playerShape:getPoints()))
 
 	love.graphics.setColor(200, 200, 200)
-	love.graphics.polygon("line", shipsList.basicEnemy.body:getWorldPoints(shipsList.basicEnemy.shape:getPoints()))
+	love.graphics.polygon("line", shipsList.basicEnemy.body:getWorldPoints(shipsList.basicEnemy.shape:getPoints()))]]
+	drawBasicShips()
 
 	love.graphics.setColor(50,50,255)
 	local circleX = playerBody:getX()
 	local circleY = playerBody:getY()
 	love.graphics.circle("fill", circleX, circleY, 3, 20)
 
-	love.graphics.setColor(193, 47, 14) --set the drawing color to red for the ball
-	love.graphics.circle("fill", objects.ball.body:getX(), objects.ball.body:getY(), objects.ball.shape:getRadius())
-
+	if objects.ball then
+		love.graphics.setColor(193, 47, 14) --set the drawing color to red for the ball
+		love.graphics.circle("fill", objects.ball.body:getX(), objects.ball.body:getY(), objects.ball.shape:getRadius())
+	end
 
 	love.graphics.setLineWidth(1)
 
@@ -98,6 +114,16 @@ function love.draw()
 		local waypoint = waypoints[1]
 		local x = playerBody:getX()
 		local y = playerBody:getY()
+		local x2 = waypoint.x
+		local y2 = waypoint.y
+		love.graphics.setColor(255,255,255)
+		love.graphics.line( x, y, x2, y2 )
+	end
+
+	for i = 1,#enemyWaypoints do
+		local waypoint = enemyWaypoints[i]
+		local x = shipsList[i+1]:getX()
+		local y = shipsList[i+1]:getY()
 		local x2 = waypoint.x
 		local y2 = waypoint.y
 		love.graphics.setColor(255,255,255)

@@ -1,6 +1,6 @@
-playerMovement = {}
+enemyMovement = {}
 
-function playerMovement:movement()
+function enemyMovement:movement()
 	local waypoint = waypoints[1]
 	if waypoint then
 		local angle = playerBody:getAngle() + math.pi/2
@@ -11,14 +11,12 @@ function playerMovement:movement()
   end
 end
 
-function playerMovement:rotate()
+function enemyMovement:rotate()
   if waypoint.valid then
     local rotSpeed = player.turnSpeed/100
 
     local sA = playerBody:getAngle()
     local tA = waypoint:getAngle()+math.pi/2
-
-
 
 		-- checks which direction to rotate in by finding which direction has the least distance to travel
 
@@ -28,6 +26,7 @@ function playerMovement:rotate()
 
     local closest1 = diff2 - math.pi*2
     local closest2 = diff1 - math.pi*2
+		
     local closest3 = diff2
     local closest4 = diff1
 
@@ -61,7 +60,7 @@ function playerMovement:rotate()
   end
 end
 
-function playerMovement:calcPlayerVector()
+function enemyMovement:calcPlayerVector()
 	for i = 1,#shipsList do
 		if shipsList[i].selected == true then
 	  	local playerVec = vector(shipsList[i].x, shipsList[i].y)
@@ -70,4 +69,4 @@ function playerMovement:calcPlayerVector()
 	end
 end
 
-return playerMovement
+return enemyMovement
