@@ -1,24 +1,22 @@
-playerMovement = {}
+movement = {}
 
-function playerMovement:movement()
-	local waypoint = waypoints[1]
-	if waypoint then
-		local angle = playerBody:getAngle() + math.pi/2
-		local playerDx = player.speed * math.cos(angle)
-		local playerDy = player.speed * math.sin(angle)
-    --print(playerDx, playerDy)
-    playerBody:setLinearVelocity(playerDx,playerDy)
+function movement:movement(ship)
+	if ship.validWaypoint and ship.accel then
+		local angle = ship.body:getAngle() + math.pi/2
+		local playerDx = ship.speed * math.cos(angle)
+		local playerDy = ship.speed * math.sin(angle)
+
+    ship.body:setLinearVelocity(playerDx,playerDy)
   end
-end
+end 
 
-function playerMovement:rotate()
-  if waypoint.valid then
+function movement:rotate(ship)
+	print(ship.name, ship.validWaypoint, ship.accel, ship.body:getAngle())
+  if ship.validWaypoint and ship.accel then
     local rotSpeed = player.turnSpeed/100
 
-    local sA = playerBody:getAngle()
-    local tA = waypoint:getAngle()+math.pi/2
-
-
+    local sA = ship.body:getAngle()
+    local tA = getWpAngle(ship)+math.pi/2
 
 		-- checks which direction to rotate in by finding which direction has the least distance to travel
 
@@ -42,26 +40,26 @@ function playerMovement:rotate()
 -- the actual rotation
 
     if math.abs(diff) < rotSpeed then
-      playerBody:setAngle(tA)
+      ship.body:setAngle(tA)
     else
-      playerBody:setAngle(sA+(rotSpeed*direction))
+    	ship.body:setAngle(sA+(rotSpeed*direction))
     end
 
--- stops it from looping endlessly
+-- stops it from looping endlessly and keeps the numbers looking reasonable
 
     if sA >= 2*math.pi then
       sA = sA-2*math.pi
-      playerBody:setAngle(sA)
+      ship.body:setAngle(sA)
     end
 
     if sA <= -2*math.pi then
       sA = sA+2*math.pi
-      playerBody:setAngle(sA)
+      ship.body:setAngle(sA)
     end
   end
 end
 
-function playerMovement:calcPlayerVector()
+function movement:calcPlayerVector()
 	for i = 1,#shipsList do
 		if shipsList[i].selected == true then
 	  	local playerVec = vector(shipsList[i].x, shipsList[i].y)
@@ -70,4 +68,4 @@ function playerMovement:calcPlayerVector()
 	end
 end
 
-return playerMovement
+return movement

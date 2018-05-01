@@ -1,5 +1,5 @@
 local waypoint = {}
-enemyWaypoints = {}
+NPCWaypoints = {}
 
 --[[function waypoint:place()
   local x = love.mouse.getX()
@@ -16,10 +16,11 @@ enemyWaypoints = {}
   self.valid = true
 end]]
 
-function waypoint:placeEnemyWP(enemyShip)
-  local x, y = love.mouse.getPosition()
+function waypoint:placeNPCWP(enemyShip)
+  local x = 400
+  local y = 150
   local waypointVec = vector(x,y)
-  local waypoint = { x=x, y=y, vec = waypointVec }
+  local waypoint = { x=x, y=y, vec = waypointVec, ship = ship }
   table.insert(enemyWaypoints, waypoint)
 
   self.startTime = love.timer.getTime()
@@ -29,7 +30,7 @@ function waypoint:placeEnemyWP(enemyShip)
   self.valid = true
 end
 
-function waypoint:getAngleEnemyWP(enemyShip)
+function waypoint:getAngleNPCWP(enemyShip)
   local waypoint = waypoints[1]
   local pX = enemyShip:getX()
   local pY = enemyShip:getY()

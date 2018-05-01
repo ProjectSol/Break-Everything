@@ -20,15 +20,18 @@ end
 function love.load()
 	vector = require "hump/vector"
 	waypoint = require "waypoint"
-	playerMovement = require "playerMovement"
+	movement = require "movement"
 	shipBuilder = require "ships"
+	alliances = require "alliances"
 
 	shipsList = {}
 
 	love.physics.setMeter(64)
 	world = love.physics.newWorld(0, 0, true)
 
-	basicWalls()
+	--basicWalls()
+	allianceSys:defaultAlliances()
+
 	shipBuilder:genBasicPlayerShip()
 	shipBuilder:genBasicEnemyShip()
 	shipBuilder:genBasicEnemyShip()
@@ -40,9 +43,7 @@ end
 function love.update(dt)
 	world:update(dt)
 
-	playerVec = playerMovement:calcPlayerVector()
-	playerMovement:rotate(dt)
-	playerMovement:movement()
+	shipsThink()
 
 	if love.keyboard.isDown('escape') then
 		love.event.push('quit')
@@ -50,7 +51,7 @@ function love.update(dt)
 end
 
 function love.mousepressed(x, y, button)
-	waypoint:place()
+	shipsThinkMouse()
 end
 
 function mouseGrabToggle()
@@ -91,9 +92,9 @@ function love.draw()
 	drawBasicShips()
 
 	love.graphics.setColor(50,50,255)
-	local circleX = playerBody:getX()
+	--[[local circleX = playerBody:getX()
 	local circleY = playerBody:getY()
-	love.graphics.circle("fill", circleX, circleY, 3, 20)
+		love.graphics.circle("fill", circleX, circleY, 3, 20)]]
 
 	if objects.ball then
 		love.graphics.setColor(193, 47, 14) --set the drawing color to red for the ball
@@ -102,25 +103,9 @@ function love.draw()
 
 	love.graphics.setLineWidth(1)
 
-	for i = 1,1 do
-		local waypoint = waypoints[i]
-		if waypoint ~= nil then
-			love.graphics.setColor(255, 255, 255)
-			love.graphics.circle("fill", waypoint.x, waypoint.y, 2)
-		end
-	end
+	drawWaypoints()
 
-	if #waypoints > 0 then
-		local waypoint = waypoints[1]
-		local x = playerBody:getX()
-		local y = playerBody:getY()
-		local x2 = waypoint.x
-		local y2 = waypoint.y
-		love.graphics.setColor(255,255,255)
-		love.graphics.line( x, y, x2, y2 )
-	end
-
-	for i = 1,#enemyWaypoints do
+	--[[for i = 1,#enemyWaypoints do
 		local waypoint = enemyWaypoints[i]
 		local x = shipsList[i+1]:getX()
 		local y = shipsList[i+1]:getY()
@@ -128,7 +113,7 @@ function love.draw()
 		local y2 = waypoint.y
 		love.graphics.setColor(255,255,255)
 		love.graphics.line( x, y, x2, y2 )
-	end
+	end]]
 
 	if debug then
 		love.graphics.setColor(255, 255, 255)

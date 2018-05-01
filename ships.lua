@@ -6,16 +6,17 @@ ships_mt = {__index = ships}
 shipIdCounter = 1
 
 behave = {}
-behave.Neutral = nil
+behave.Neutral = {aggression = 0, dfnd = 10,  player = false }
 
-behave.EnemyPreset1 = nil
-behave.EnemyPreset2 = nil
+behave.EnemyPreset1 = {aggression = 8, dfnd = 2,  player = false }
+behave.EnemyPreset2 = {aggression = 0, dfnd = 10,  player = false }
 
-behave.playerPreset1 = nil
-behave.playerPreset2 = nil
-behave.playerConfig1 = nil --customisable templates for automated action when the player ignores this ship.
-behave.playerConfig2 = nil
-behave.playerConfig3 = nil
+behave.PlayerPreset1 = {aggression = 0, dfnd = 10,  player = true }
+behave.PlayerPreset2 = {aggression = 0, dfnd = 10,  player = true }
+ --customisable templates for automated action when the player ignores this ship.
+behave.PlayerConfig1 = {aggression = 0, dfnd = 10,  player = true }
+behave.PlayerConfig2 = {aggression = 0, dfnd = 10,  player = true }
+behave.PlayerConfig3 = {aggression = 0, dfnd = 10,  player = true }
 
 setmetatable(ships, {
   __call = function (cls, ...)
@@ -36,31 +37,96 @@ function ships:_init()
   shipIdCounter = shipIdCounter+1
   self.name = "testShip"
   self.class = lightClass
+  self.alliance = unaligned
+  self.colour = alliance.colour
   self.speed = 5
   self.turnSpeed = 5
+  self.accel = true
   self.x = 30+50*(self.id-1)
-  self.behaviour = Neutral
-  print(self.x)
+  self.behaviour = behave.EnemyPreset1
+  self.validWaypoint = false
+  self.player = false
+  self.selected = false
   self.y = 300
+  self.vec = vector.new(self.x, self.y)
+  self.wpVec = {}
 end
 
 function ships:playerShipInit()
+  self.name = "The Kestrel"
   self.speed = 15.5
+  self.behaviour = behave.PlayerPreset1
   self.turnSpeed = 3
-  self.selected = false
+  self.player = true
+  self.selected = true
 end
 
 function ships:getShipPos()
-  return self.x, self.y
+  return self.x, self.y, self.vec
 end
 
-function ships:placeWaypoint()
+function placeNPCWP(NPCShip)
+  for i = 1,#shipsList do
+    local ship = shipsList[i]
+
+    if ship.player then
+      local x,y = player:getShipPos()
+      local waypointVec = vector(x,y)
+      local waypoint = { x=x, y=y, vec = waypointVec, ship = ship }
+      --[[if NPCShip.waypoint then
+        local dist = NPCShip:dist(waypointVec)
+        local dist2 = NPCShip:dist(NPCShip.wpVec)
+        if dist < dist2 then
+
+        end
+      else
+
+      end]]
+      waypointVec = vector(x,y)
+      NPCShip.waypoint = waypoint
+      NPCShip.validWaypoint = true
+      --print(NPCShip.name, NPCShip.validWaypoint)
+    end
+  end
+end
+
+function placeWaypoint()
+  local setShip = {}
+
+  for i = 1,#shipsList do
+    local ship = shipsList[i]
+    if ship.selected == true then
+      setShip = ship
+    end
+  end
+
   local x, y = love.mouse.getPosition()
-  waypointVec = vector(x,y)
-  self.waypoint = { x=x, y=y }
-  waypoints = {waypoint}
-  --table.insert(waypoints, newWaypoint)
-  self.validWaypoint = true
+  local waypointVec = vector(x,y)
+  setShip.waypoint = { x=x, y=y, vec = waypointVec }
+  setShip.validWaypoint = true
+end
+
+function getWpAngle(ship)
+  if ship.validWaypoint then
+    local waypoint = ship.waypoint
+    local pX = ship.body:getX()
+    local pY = ship.body:getY()
+    local wX, wY = waypoint.vec:unpack()
+
+    ship._angle = math.angle(wX, wY, pX, pY)
+    return ship._angle
+  else
+    print("Ship lacks a waypoint")
+  end
+end
+
+counter = 0
+function ships:behave()
+  if self.behaviour.aggression == 10 then
+    placeNPCWP(self)
+  else
+
+  end
 end
 
 classes = {}
@@ -95,6 +161,7 @@ function shipBuilder:genBasicPlayerShip()
     playerFixture = ship.fixture
 
 	playerBody:setAngle(0)
+  playerBody:setAngularDamping(0.1)
 end
 
 function shipBuilder:genBasicEnemyShip()
@@ -126,6 +193,7 @@ function shipBuilder:genBasicEnemyShip()
     basicEnemyFixture = shipsList.ship
 
 	basicEnemyBody:setAngle(0)
+  basicEnemyBody:setAngularDamping(0.1)
 end
 
 function basicObject()
@@ -168,6 +236,46 @@ function drawBasicShips()
 
     --[[love.graphics.setColor(200, 200, 200)
     love.graphics.polygon("line", shipsList.basicEnemy.body:getWorldPoints(shipsList.basicEnemy.shape:getPoints()))]]
+  end
+end
+
+function drawWaypoints()
+  for i = 1,#shipsList do
+		local ship = shipsList[i]
+		local waypoint = shipsList[i].waypoint
+    local x = ship.body:getX()
+    local y = ship.body:getY()
+
+		if ship.validWaypoint then
+			love.graphics.setColor(255, 255, 255)
+			love.graphics.circle("fill", waypoint.x, waypoint.y, 2)
+  		love.graphics.setColor(255,255,255)
+  		love.graphics.line( waypoint.x, waypoint.y, x, y )
+    end
+
+	end
+end
+
+
+
+function shipsThink()
+  for i = 1,#shipsList do
+    local ship = shipsList[i]
+  --  playerVec = movement:calcPlayerVector()
+    movement:rotate(ship)
+    movement:movement(ship)
+    ship:behave()
+
+  end
+end
+
+function shipsThinkMouse()
+  placeWaypoint()
+  for i = 1,#shipsList do
+    local ship = shipsList[i]
+
+
+
   end
 end
 
