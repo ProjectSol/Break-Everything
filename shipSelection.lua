@@ -23,11 +23,7 @@ function shipSelection:drawSidebar()
     end
   end
   function pausePanelTest:doClick()
-    if paused == true then
-      paused = false
-    else
-      paused = true
-    end
+  
   end
 
   for i = 1,#shipsList do

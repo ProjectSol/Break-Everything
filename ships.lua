@@ -83,17 +83,16 @@ function placeNPCWP(NPCShip)
     end
   end
   print(#targets)
+
+  NPCShip.waypoint = targets[1]
+  NPCShip.wpVec = targets[1].vec
+  NPCShip.validWaypoint = true
+
   for i = 1,#targets do
-    target = targets[i]  
-    if NPCShip.wpVec then
-      local dist = (NPCShip.shipVec-target.vec):len()
-      local dist2 = (NPCShip.shipVec-NPCShip.wpVec):len()
-      if dist <= dist2 then
-        NPCShip.waypoint = target
-        NPCShip.wpVec = target.vec
-        NPCShip.validWaypoint = true
-      end
-    else
+    target = targets[i]
+    local dist = (NPCShip.shipVec-target.vec):len()
+    local dist2 = (NPCShip.shipVec-NPCShip.wpVec):len()
+    if dist <= dist2 then
       NPCShip.waypoint = target
       NPCShip.wpVec = target.vec
       NPCShip.validWaypoint = true

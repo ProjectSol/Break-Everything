@@ -31,6 +31,7 @@ function love.load()
 	require "UI/_table"
 	require "UI/gui"
 	loadFiles('UI/gui')
+	systems = require "systems"
 	vector = require "hump/vector"
 	Camera = require "hump/camera"
 	waypoint = require "waypoint"
@@ -99,10 +100,19 @@ function love.update(dt)
 
 		shipsThink()
 	end
-	if love.keyboard.isDown('escape') then
+end
+
+function love.keypressed( key, scancode, isrepeat )
+	if key == 'escape' then
 		love.event.push('quit')
 	end
-end
+	if key == 'space' then
+		systems:pause()
+	end
+	if key == 'tab' then
+		print("Now we should be changing ship")
+	end
+ end
 
 function love.mousepressed(x, y, button)
 	gui.buttonCheck( x, y, button )
