@@ -3,15 +3,28 @@ movement = {}
 function movement:movement(ship)
 	if ship.validWaypoint and ship.accel then
 		local angle = ship.body:getAngle() + math.pi/2
-		local playerDx = ship.speed * math.cos(angle)
-		local playerDy = ship.speed * math.sin(angle)
+		local playerDx = 10 * ship.speed * math.cos(angle)
+		local playerDy = 10 * ship.speed * math.sin(angle)
 
-    ship.body:setLinearVelocity(playerDx,playerDy)
+		ship.body:setLinearVelocity(playerDx,playerDy)
+		local currPlayer = shipBuilder:getSelectedPlayerShip()
+		if ship.player and ship.selected and cameraLock == true then
+			camera:lookAt(ship.body:getX(), ship.body:getY())
+		end
+		ship.shipVec = vector(ship.body:getX(), ship.body:getY())
   end
-end 
+	if ship.wpVec then
+		--print((ship.shipVec:dist(ship.wpVec)))
+		if ship.shipVec:dist(ship.wpVec) < 5 then
+			ship.wpVec = nil
+			ship.waypoint = nil
+			ship.validWaypoint = false
+		end
+	end
+end
 
 function movement:rotate(ship)
-	print(ship.name, ship.validWaypoint, ship.accel, ship.body:getAngle())
+	--print(ship.name, ship.validWaypoint, ship.accel, ship.body:getAngle())
   if ship.validWaypoint and ship.accel then
     local rotSpeed = player.turnSpeed/100
 

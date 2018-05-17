@@ -1,5 +1,9 @@
 allianceSys = {}
+
 alliances = {}
+alliances_mt = {__index = alliances}
+
+alliList = {}
 
 setmetatable(alliances, {
   __call = function (cls, ...)
@@ -15,35 +19,59 @@ function alliances.create()
   return new_inst
 end
 
-alliColours = {
-Turquoise = {26,188,156}, Blue = {41,128,185},
-Emerald = {241,196,15}, Purple = {142,68,173},
-Asphalt = {56,75,97}, Sun = {241,196,15},
-Pumpkin = {211,84,0}, Red = {192,57,43},
-Wheat = {139,126,102}, Pink = {255,0,255},
-Green = {34,139,34}, Brown = {139,90,0},
-Sepia = {94,38,18}, unknownShip = {189,195,199},
-Default = {250,250,250}
-}
-
-
 function alliances:_init()
   self.id = alliIdCounter
   alliIdCounter = alliIdCounter+1
   self.name = "undefinedAlliance"
   self.class = "undefined"
   self.behaviour = nil
-  self.colour = alliColours.Default
+  self.colour = Default
   self.opinion = defineOpinions()
 end
 
-function defineOpinions()
+function alliances:setName(name)
+  self.name = name
+  return self.name
+end
+
+function alliances:setClass(class)
+  self.class = class
+  return self.class
+end
+
+function alliances:setBehaviour(behave)
+  self.behaviour = behave
+  return self.behaviour
+end
+
+function alliances:setColour(colour)
+  self.colour = colour
+  --return self.colour
+end
+
+function alliances:getAlliance(name)
+  for i = 1,#alliList do
+    local alli = alliList[i]
+    if alli.name == name then
+      alliance = alliList[i]
+      return alliance
+    end
+  end
+end
+
+function alliances:defineOpinions()
   --So setting how much they like the player and iterating through all the existing alliances to see how they like each other
+  return -1
 end
 
-function alliances:defaultAlliances()
-
+function allianceSys:newAlliance(name, colour)
+  local ally = alliances.create()
+  table.insert(alliList, ally)
+  --print(alliList[#alliList].name)
+  local alli = alliList[#alliList]
+  print(alli:setName(name))
+  print(alli:setColour(colour))
 end
 
 
-return allianceSys
+return alliances
