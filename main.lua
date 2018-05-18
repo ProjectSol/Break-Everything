@@ -48,19 +48,19 @@ function love.load()
 	world = love.physics.newWorld(0, 0, true)
 	love.mouse.setGrabbed(true)
 
-	Turquoise = {26,188,156} Blue = {41,128,185}
-	Emerald = {241,196,15} Purple = {142,68,173}
-	Asphalt = {56,75,97} Yellow = {241,196,15}
-	Pumpkin = {211,84,0} Red = {232,77,63}
-	Wheat = {139,126,102} Pink = {255,0,255}
-	Green = {34,139,34} Brown = {139,90,0}
-	Sepia = {94,38,18} UnknownShip = {189,195,199}
-	Default = {250,250,250}
+	Turquoise = {26/255,188/255,156/255} Blue = {41/255,128/255,185/255}
+	Emerald = {241/255,196/255,15/255} Purple = {142/255,68/255,173/255}
+	Asphalt = {56/255,75/255,97/255} Yellow = {241/255,196/255,15/255}
+	Pumpkin = {211/255,84/255,0} Red = {232/255,77/255,63/255}
+	Wheat = {139/255,126/255,102/255} Pink = {255/1,0,255/1}
+	Green = {34/255,139/255,34/255} Brown = {139/255,90/255,0}
+	Sepia = {94/255,38/255,18/255} UnknownShip = {189/255,195/255,199/255}
+	Default = {1,1,1}
 
 	--basicWalls()
 	allianceSys:newAlliance("Unaligned", UnknownShip)
 	allianceSys:newAlliance("Pirates", Red)
-	allianceSys:newAlliance("SuperHappyFunLand", Purple)
+	--allianceSys:newAlliance("SuperHappyFunLand", Purple)
 
 	shipBuilder:genBasicPlayerShip()
 	shipBuilder:genBasicPlayerShip()
@@ -68,19 +68,20 @@ function love.load()
 	shipBuilder:genBasicEnemyShip()
 	shipBuilder:genBasicEnemyShip()
 
-	local player = shipBuilder:getSelectedPlayerShip()
+	--local player = shipBuilder:getSelectedPlayerShip()
 	camera = Camera(player.x, player.y)
 	camera.smoother = Camera.smooth.damped(10)
 	camControl:setCameraLock(true)
 
-	shipSelection:drawSidebar()
+	UI:basicUI()
 end
 
 function loadFiles( dir )
 	local objects = love.filesystem.getDirectoryItems( dir )
 	local tbl = {}
 	for i = 1,#objects do
-		if love.filesystem.isDirectory( dir.."/"..objects[ i ] ) then
+		info = love.filesystem.getInfo( dir.."/"..objects[ i ] )
+		if info.fileType == 'directory' then
 			tbl[ #tbl + 1 ] = dir.."/"..objects[ i ]
 		else
 			local name = dir.."/"..string.sub( objects[ i ], 0, string.len( objects[ i ] ) - 4 )
@@ -110,7 +111,8 @@ function love.keypressed( key, scancode, isrepeat )
 		systems:pause()
 	end
 	if key == 'tab' then
-		print("Now we should be changing ship")
+		--print("Now we should be changing ship")
+		shipSelection:nextPlayerShip()
 	end
  end
 
@@ -155,7 +157,7 @@ end
 function love.draw()
 	gui.draw()
 	camera:attach()
-	local currPlayer = shipBuilder:getSelectedPlayerShip()
+	--local currPlayer = shipBuilder:getSelectedPlayerShip()
 	drawBasicShips()
 
 	love.graphics.setLineWidth(1)
@@ -164,8 +166,6 @@ function love.draw()
 
 	camControl:cameraMovement()
 	camera:detach()
-
-	UI:drawUI()
 
 	if x1 and y1 then
 		love.graphics.line(x1, y1, love.mouse.getPosition())
@@ -176,7 +176,7 @@ function love.draw()
 		love.graphics.setFont(font)
 		fps = tostring(love.timer.getFPS())
 		love.graphics.print("Current FPS: "..fps, 9, 10)
-		bodies = world:getBodyList( )
+		bodies = world:getBodies( )
 		--[[for i = 1,#bodies do
 			print(bodies[i])
 		end]]

@@ -58,7 +58,8 @@ function ships:playerShipInit()
   self.behaviour = behave.PlayerPreset1
   self.turnSpeed = 6
   self.player = true
-  self.selected = true
+  self:selectIndividual()
+  print(self.name.." was unselected as part of the init function, the selected satus has now been returned to "..tostring(self.selected))
 end
 
 function ships:pirateInit()
@@ -82,7 +83,7 @@ function placeNPCWP(NPCShip)
       table.insert(targets, waypoint)
     end
   end
-  print(#targets)
+  --print(#targets)
 
   NPCShip.waypoint = targets[1]
   NPCShip.wpVec = targets[1].vec
@@ -132,29 +133,38 @@ function getWpAngle(ship)
     print("Ship lacks a waypoint")
   end
 end
+
+function ships:selectIndividual()
+  shipBuilder:unselectSelectedShips()
+  self.selected = true
+end
+
 function shipBuilder:getSelectedPlayerShip()
   for i = 1,#shipsList do
     --print("test")
     local ship = shipsList[i]
     if ship.player == true and ship.selected == true then
     --  print(ship.name)
-      return ship
+      print('getSelectedPlayerShip ran and returned '..ship.name)
+      return ship, i
     else
-      print(ship.name.."is either not a player or not selected")
+      print(ship.name.." is either not a player or not selected.     getSelectedPlayerShip")
     end
   end
   return -1
 end
 
 function shipBuilder:unselectSelectedShips()
+  print("\n\nRunning unselectSelectedShips: "..#shipsList.." times")
   for i = 1,#shipsList do
     --print("test")
     local ship = shipsList[i]
     if ship.player == true and ship.selected == true then
     --  print(ship.name)
       ship.selected = false
+      print(ship.name.." selected: "..tostring(ship.selected).."     unselectSelectedShips")
     else
-      print(ship.name.."is either not a player or not selected")
+      print(ship.name.." selected: "..tostring(ship.selected).."     unselectSelectedShips")
     end
   end
 end
@@ -166,11 +176,6 @@ function ships:behave()
   else
 
   end
-end
-
-function ships:selectIndividual()
-  shipBuilder:unselectSelectedShips()
-  self.selected = true
 end
 
 classes = {}

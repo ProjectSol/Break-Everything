@@ -7,7 +7,7 @@ function movement:movement(ship)
 		local playerDy = 10 * ship.speed * math.sin(angle)
 
 		ship.body:setLinearVelocity(playerDx,playerDy)
-		local currPlayer = shipBuilder:getSelectedPlayerShip()
+		--local currPlayer = shipBuilder:getSelectedPlayerShip()
 		if ship.player and ship.selected and cameraLock == true then
 			camera:lookAt(ship.body:getX(), ship.body:getY())
 		end

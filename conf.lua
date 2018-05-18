@@ -5,5 +5,5 @@ function love.conf(t)
 	t.console = true
 	t.vsync = false
 	t.window.fullscreentype = "desktop"
-	t.window.fullscreen = true
+	t.window.fullscreen = false
 end
