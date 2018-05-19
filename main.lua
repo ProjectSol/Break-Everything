@@ -114,6 +114,14 @@ function love.keypressed( key, scancode, isrepeat )
 		--print("Now we should be changing ship")
 		shipSelection:nextPlayerShip()
 	end
+	
+	local err = tonumber(key)
+	if err ~= nil then
+		if tonumber(key) >= 0 and tonumber(key) < 10 then
+			shipSelection:cntrlGroupSelect(tonumber(key))
+		end
+	end
+
  end
 
 function love.mousepressed(x, y, button)

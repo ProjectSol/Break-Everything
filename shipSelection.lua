@@ -1,14 +1,17 @@
 shipSelection = {}
 
 function shipSelection:drawSidebar(width, height)
+  sidebar = {}
   for i = 1,#shipsList do
     local ship = shipsList[i]
 
     if ship.player then
+
       local unitSelectionPanel = gui.create( "button" )
       unitSelectionPanel:setSize( width/shipSelectionWidthCalibration, height/shipSelectionHeightCalibration )
       unitSelectionPanel:setPos( 0, height/(shipSelectionPositionCalibration)+((i-1)*(height/shipSelectionHeightCalibration)+1*(i-1)) )
       unitSelectionPanel:setFont(titleText)
+      unitSelectionPanel.sideBarPanel = true
       unitSelectionPanel:setTextOffset(0,17-(i*3))
       function unitSelectionPanel:paint(w, h)
           love.graphics.setColor( unpack(ship.alliance.colour) )
@@ -34,19 +37,24 @@ function shipSelection:nextPlayerShip()
 
   for i = 1,#shipsList do
     ship = shipsList[i]
+    prev = i+1
 
     if ship.player and ship.selected then
-
-      prev = i+1
-      shipBuilder:unselectSelectedShips()
+      if found == true then
+        break
+      else
+        shipBuilder:unselectSelectedShips()
+      end
       if found == false then
         print('first loop ran')
         for k = prev,#shipsList do
           print("Current iteration i: "..ship.name.." i = "..i.." current iteration k: "..shipsList[k].name.." k = "..k)
           if shipsList[k].player then
+            shipsList[k].selected = true
+            print(shipsList[k].selected)
             print("subsequently this iteration of k is a player ship thus running unselect and selecting itself")
             shipsList[k].selected = true
-            print(ship.name.."("..k..") selected: "..tostring(ship.selected).."   nextPlayerShip")
+            print(shipsList[k].name.."("..k..") selected: "..tostring(shipsList[k].selected).."   nextPlayerShip")
             found = true
           end
         end
@@ -69,6 +77,28 @@ function shipSelection:nextPlayerShip()
     end
   end
 end
+
+function shipSelection:cntrlGroupSelect(num)
+  local globalPanels = gui.getObjects()
+  local localPanels = {}
+  print(#globalPanels)
+  for i = 1,#globalPanels do
+    if globalPanels[i].sidebarPanel == true then
+      table.insert(globalPanels[i], localPanels)
+      print(i)
+    else
+
+    end
+  end
+
+  for i = 1,#localPanels do
+    print(#localPanels)
+  end
+
+end
+
+
+
 
 
 return shipSelection
