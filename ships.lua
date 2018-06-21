@@ -40,7 +40,7 @@ function ships:_init()
   self.alliance = alliances:getAlliance("Unaligned")
   self.speed = 5
   self.turnSpeed = 2
-  self.accel = true
+  self.accel = 2.5
   self.x = 30+50*(self.id-1)
   self.behaviour = behave.EnemyPreset1
   self.validWaypoint = false
@@ -50,6 +50,10 @@ function ships:_init()
   self.shipVec = vector.new(self.x,self.y)
   self.waypoint = nil
   self.wpVec = nil
+  self.movement2Angle = 0;
+  self.maxSpeed = ship.speed
+	self.reverseSpeed = ship.speed/3
+  self.speedPercent = 0
 end
 
 function ships:playerShipInit()
@@ -118,6 +122,9 @@ function placeWaypoint()
   setShip.waypoint = { x=x, y=y, vec = waypointVec }
   setShip.wpVec = waypointVec
   setShip.validWaypoint = true
+  if usingMovement2 then
+    return getWpAngle(setShip)
+  end
 end
 
 function getWpAngle(ship)

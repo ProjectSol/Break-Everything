@@ -81,4 +81,41 @@ function movement:calcPlayerVector()
 	end
 end
 
+function movement:movementOptionTwo(ship)
+	if ship.validWaypoint and ship.movement2Angle then
+		local angle = ship.movement2movement2Angle
+		ship.currSpeed = movement:calcCurrSpeed(ship)
+		local playerDx = 10 * ship.currSpeed * math.cos(angle)
+		local playerDy = 10 * ship.currSpeed * math.sin(angle)
+
+		ship.body:setLinearVelocity(playerDx,playerDy)
+		--local currPlayer = shipBuilder:getSelectedPlayerShip()
+		if ship.player and ship.selected and cameraLock == true then
+			camera:lookAt(ship.body:getX(), ship.body:getY())
+		end
+		ship.shipVec = vector(ship.body:getX(), ship.body:getY())
+  end
+end
+
+function movement:calcCurrSpeed(ship)
+	local acceleration = ship.accel
+	local current = ship.currSpeed
+	if ship.speedPercent > 0 then
+		local projected = ship.maxSpeed*ship.speedPercent
+	else
+		projected = ship.reverseSpeed*ship.speedPercent
+	end
+
+	if current + acceleration < projected then
+		current = current+acceleration
+	else
+		current = projected
+	end
+	return current
+end
+
+function movement:updateSpeedPercentange()
+	
+end
+
 return movement
