@@ -36,11 +36,11 @@ function ships:_init()
   self.id = shipIdCounter
   shipIdCounter = shipIdCounter+1
   self.name = "unnamedShip"
-  self.class = lightClass
+  self.class = classes.mediumClass
   self.alliance = alliances:getAlliance("Unaligned")
   self.speed = 5
   self.turnSpeed = 2
-  self.accel = true
+  self.accel = 2.5
   self.x = 30+50*(self.id-1)
   self.behaviour = behave.EnemyPreset1
   self.validWaypoint = false
@@ -50,16 +50,33 @@ function ships:_init()
   self.shipVec = vector.new(self.x,self.y)
   self.waypoint = nil
   self.wpVec = nil
+  self.movement2Angle = 0
+  self.maxSpeed = self.speed
+  self.currSpeed = 0
+  self.speedPercent = 1
+	self.reverseSpeed = self.speed/3
 end
 
 function ships:playerShipInit()
-  self.name = "The Kestrel"
-  self.speed = 10
-  self.behaviour = behave.PlayerPreset1
-  self.turnSpeed = 6
   self.player = true
   self:selectIndividual()
-  print(self.name.." was unselected as part of the init function, the selected satus has now been returned to "..tostring(self.selected))
+  print(self.name.." was unselected as part of the init function, the selected status has now been returned to "..tostring(self.selected))
+end
+
+function ships:setTypeKestrel()
+  self.name = "Kestrel"
+  self.speed = 10
+  self.class = classes.mediumClass
+  self.behaviour = behave.PlayerPreset1
+  self.turnSpeed = 6
+end
+
+function ships:setTypePixie()
+  self.name = "Pixie"
+  self.speed = 15
+  self.class = classes.lightClass
+  self.behaviour = behave.PlayerPreset1
+  self.turnSpeed = 10
 end
 
 function ships:pirateInit()
@@ -83,7 +100,6 @@ function placeNPCWP(NPCShip)
       table.insert(targets, waypoint)
     end
   end
-  --print(#targets)
 
   NPCShip.waypoint = targets[1]
   NPCShip.wpVec = targets[1].vec
@@ -115,9 +131,18 @@ function placeWaypoint()
   local x,y = love.mouse.getPosition()
   x,y = camera:worldCoords(x,y)
   local waypointVec = vector(x,y)
-  setShip.waypoint = { x=x, y=y, vec = waypointVec }
+
+  setShip.waypoint = { x=x, y=y, movement2Angle = 0, vec = waypointVec }
   setShip.wpVec = waypointVec
   setShip.validWaypoint = true
+
+  if usingMovement2 then
+    setShip.movement2Angle = getWpAngle(setShip)
+    waypointVec = vector(setShip.movement2Angle,1)
+    --[[waypointVec = vector(1,0)
+    waypointVec.rotateInPlace(movement2Angle)]]
+    setShip.waypoint.waypointVec = waypointVec
+  end
 end
 
 function getWpAngle(ship)
@@ -125,7 +150,8 @@ function getWpAngle(ship)
     local waypoint = ship.waypoint
     local pX = ship.body:getX()
     local pY = ship.body:getY()
-    local wX, wY = waypoint.vec:unpack()
+    local wX,wY
+    wX, wY = waypoint.vec:unpack()
 
     ship._angle = math.angle(wX, wY, pX, pY)
     return ship._angle
@@ -179,9 +205,10 @@ function ships:behave()
 end
 
 classes = {}
-classes.lightClass = {-20, -20, 20, -20, 0, 20}
+classes.lightClass = {-15, -15, 15, -15, 0, 15}
+classes.mediumClass = {-20, -20, 20, -20, 0, 20}
 
-function shipBuilder:genBasicPlayerShip()
+function shipBuilder:genKestrelPlayerShip()
   local playerShip = ships.create()
 
   table.insert(shipsList, playerShip)
@@ -191,6 +218,45 @@ function shipBuilder:genBasicPlayerShip()
   end
 
 	ship:_init()
+
+  ship:setTypeKestrel()
+  ship:playerShipInit()
+
+  player = ship
+
+  local x,y = player:getShipPos()
+  playerX = x
+  playerY = y
+
+	--shipsList.playerShip = { --[[speed = playerShip.speed, turnSpeed = playerShip.turnSpeed]] }
+	ship.body = love.physics.newBody( world, playerX, playerY, "dynamic")
+    playerBody = ship.body
+
+	ship.shape = love.physics.newPolygonShape(unpack(ship.class))--love.physics.newRectangleShape( 30, 40 )
+    playerShape = ship.shape
+
+  ship.fixture = love.physics.newFixture(playerBody, playerShape)
+    playerFixture = ship.fixture
+
+	playerBody:setAngle(math.pi)
+  playerFixture:setRestitution(2)
+  playerFixture:setMask(1,2)
+  playerBody:setAngularDamping(2)
+  playerBody:setLinearDamping(2)
+end
+
+function shipBuilder:genPixiePlayerShip()
+  local playerShip = ships.create()
+
+  table.insert(shipsList, playerShip)
+  --print(#shipsList)
+  for i = 1,#shipsList do
+    ship = shipsList[i]
+  end
+
+	ship:_init()
+
+  ship:setTypePixie()
   ship:playerShipInit()
 
   player = ship
@@ -275,9 +341,23 @@ function drawWaypoints()
 		local waypoint = shipsList[i].waypoint
     local x = ship.body:getX()
     local y = ship.body:getY()
+    local wX,wY
 
-		if ship.validWaypoint then
+		--[[if ship.validWaypoint and usingMovement2 and ship.player then
+      local offsetX,offsetY = waypoint.globalVec:unpack()
+      wX, wY = ship.x+offsetX, ship.y+offsetY
+      --print(ship.name,wX,wY,offsetX,offsetY)
 			love.graphics.setColor(255, 255, 255)
+			love.graphics.circle("fill", wX, wY, 2)
+      love.graphics.setColor(1,1,0)
+      love.graphics.print(offsetX.." X, "..offsetY.." Y",wX+30,wY+30)
+      love.graphics.print(wX.." X, "..wY.." Y",wX+30,wY)
+      love.graphics.print(x.." X, "..y.." Y",x+30,y)
+  		love.graphics.setColor(255,255,255)
+  		love.graphics.line( wX, wY, x, y )
+    elseif ship.validWaypoint then]]
+    if ship.validWaypoint then
+      love.graphics.setColor(255, 255, 255)
 			love.graphics.circle("fill", waypoint.x, waypoint.y, 2)
   		love.graphics.setColor(255,255,255)
   		love.graphics.line( waypoint.x, waypoint.y, x, y )
@@ -297,8 +377,13 @@ function shipsThink()
     ship.shipVec = vector.new(ship.x, ship.y)
 
 
-    movement:rotate(ship)
-    movement:movement(ship)
+    if usingMovement2 and ship.player then
+      movement:rotate2(ship)
+      movement:movement2(ship)
+    else
+      movement:rotate(ship)
+      movement:movement(ship)
+    end
     ship:behave()
 
   end

@@ -1,10 +1,11 @@
 lg = love.graphics
-rasterizer = love.font.newRasterizer( "assets/Meteora - DEMO.ttf", 20 )
+rasterizer = love.font.newRasterizer( "assets/Montserrat-Regular.ttf", 20 )
 titleText = love.graphics.newFont(rasterizer)
 titleText:setFilter( 'nearest', 'nearest', 1 )
-rasterizer = love.font.newRasterizer( "assets/Meteora - DEMO.ttf", 8 )
+rasterizer = love.font.newRasterizer( "assets/Montserrat-Regular.ttf", 8 )
 readingText = love.graphics.newFont(rasterizer)
 readingText:setFilter( 'nearest', 'nearest', 1 )
+defaultFont = lg.newFont(20)
 
 font = love.graphics.newFont()
 bypass = false
@@ -52,21 +53,26 @@ function love.load()
 	Emerald = {241/255,196/255,15/255} Purple = {142/255,68/255,173/255}
 	Asphalt = {56/255,75/255,97/255} Yellow = {241/255,196/255,15/255}
 	Pumpkin = {211/255,84/255,0} Red = {232/255,77/255,63/255}
-	Wheat = {139/255,126/255,102/255} Pink = {255/1,0,255/1}
+	Wheat = {139/255,126/255,102/255} Pink = {255/255,0,255/255}
 	Green = {34/255,139/255,34/255} Brown = {139/255,90/255,0}
 	Sepia = {94/255,38/255,18/255} UnknownShip = {189/255,195/255,199/255}
 	Default = {1,1,1}
+
+
+	usingMovement2 = true
 
 	--basicWalls()
 	allianceSys:newAlliance("Unaligned", UnknownShip)
 	allianceSys:newAlliance("Pirates", Red)
 	--allianceSys:newAlliance("SuperHappyFunLand", Purple)
+	for i = 1,2 do
+		shipBuilder:genKestrelPlayerShip()
+		shipBuilder:genPixiePlayerShip()
+	end
+	for i = 1,3 do
+		shipBuilder:genBasicEnemyShip()
+	end
 
-	shipBuilder:genBasicPlayerShip()
-	shipBuilder:genBasicPlayerShip()
-	shipBuilder:genBasicEnemyShip()
-	shipBuilder:genBasicEnemyShip()
-	shipBuilder:genBasicEnemyShip()
 
 	--local player = shipBuilder:getSelectedPlayerShip()
 	camera = Camera(player.x, player.y)
@@ -74,6 +80,7 @@ function love.load()
 	camControl:setCameraLock(true)
 
 	UI:basicUI()
+	UI:movementElements()
 end
 
 function loadFiles( dir )
@@ -113,6 +120,9 @@ function love.keypressed( key, scancode, isrepeat )
 	if key == 'tab' then
 		--print("Now we should be changing ship")
 		shipSelection:nextPlayerShip()
+		for i = 1,#shipsList do
+			print("DebugRun: "..tostring(shipsList[i].selected))
+		end
 	end
 
 	local err = tonumber(key)
@@ -125,8 +135,13 @@ function love.keypressed( key, scancode, isrepeat )
  end
 
 function love.mousepressed(x, y, button)
+	shipsMouseRunBool = true
+	--print('This triggers before thing')
 	gui.buttonCheck( x, y, button )
-	shipsThinkMouse(button)
+	--print('This triggers after thing')
+	if shipsMouseRunBool == true then
+		shipsThinkMouse(button)
+	end
 end
 
 function love.mousereleased(x, y, button, isTouch)
@@ -171,6 +186,8 @@ function love.draw()
 	love.graphics.setLineWidth(1)
 
 	drawWaypoints()
+	local x,y = camera:worldCoords(love.mouse.getPosition())
+	love.graphics.print(x.." X, "..y.." Y",x+30,y+60)
 
 	camControl:cameraMovement()
 	camera:detach()
@@ -185,8 +202,5 @@ function love.draw()
 		fps = tostring(love.timer.getFPS())
 		love.graphics.print("Current FPS: "..fps, 9, 10)
 		bodies = world:getBodies( )
-		--[[for i = 1,#bodies do
-			print(bodies[i])
-		end]]
 	end
 end

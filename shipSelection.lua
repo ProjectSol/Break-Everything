@@ -45,6 +45,7 @@ function shipSelection:nextPlayerShip()
       else
         shipBuilder:unselectSelectedShips()
       end
+
       if found == false then
         print('first loop ran')
         for k = prev,#shipsList do
@@ -56,9 +57,13 @@ function shipSelection:nextPlayerShip()
             shipsList[k].selected = true
             print(shipsList[k].name.."("..k..") selected: "..tostring(shipsList[k].selected).."   nextPlayerShip")
             found = true
+            print("Found has been set to true")
+            break
           end
         end
-        print(found)
+
+        print("The ship has been found: "..tostring(found))
+
         if found == false then
           print("second loop ran")
           for k = 1,prev do
