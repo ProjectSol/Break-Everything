@@ -9,7 +9,7 @@ readingText:setFilter( 'nearest', 'nearest', 1 )
 font = love.graphics.newFont()
 bypass = false
 
-function math.angle(x1,y1, x2,y2)
+function math.angle(x1,y1, x2,y2) 
 	return math.atan2(y2-y1, x2-x1)
 end
 
@@ -114,7 +114,7 @@ function love.keypressed( key, scancode, isrepeat )
 		--print("Now we should be changing ship")
 		shipSelection:nextPlayerShip()
 	end
-	
+
 	local err = tonumber(key)
 	if err ~= nil then
 		if tonumber(key) >= 0 and tonumber(key) < 10 then
