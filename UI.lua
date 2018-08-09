@@ -32,7 +32,7 @@ function UI:movementElements()
 
     if max then
       accelerationPanel1:setPos( lg.getWidth()/2-lg.getWidth()/4, 20)
-      accelerationPanel1:setSize( lg.getWidth()/2, 50 )
+      accelerationPanel1:setSize( AccelPanelWidthConstant, 50 )
       accelerationPanel1:setTextColor( 0, 0, 0 )
       --lg.setLineWidth(3)
       lg.setColor(250,50,50)
@@ -69,12 +69,12 @@ function UI:movementElements()
     end
     if max then
       accelerationPanel2:setPos( lg.getWidth()/2-lg.getWidth()/4, 20)
-      accelerationPanel2:setSize( AccelPanelWidthConstant*speedPercent, 50 )
+      accelerationPanel2:setSize( AccelPanelWidthConstant, 50 )
       accelerationPanel2:setTextColor( 0, 0, 0 )
       accelerationPanel2:setText("")
       lg.setLineWidth(3)
       lg.setColor(1*speedPercent*2/3,0.5*1/3,0.5*1/3)
-      lg.rectangle('line',0,0,w,h)
+      lg.rectangle('line',0,0,w*speedPercent,h)
       lg.setColor(0,0.8,0.8)
     end
   end

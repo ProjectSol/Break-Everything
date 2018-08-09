@@ -6,7 +6,7 @@ ships_mt = {__index = ships}
 shipIdCounter = 1
 
 behave = {}
-behave.NeutralPreset1 = {aggression = 10, dfnd = 10,  player = false }
+behave.NeutralPreset1 = {aggression = 0, dfnd = 0,  player = false }
 
 behave.EnemyPreset1 = {aggression = 10, dfnd = 2,  player = false }
 behave.EnemyPreset2 = {aggression = 0, dfnd = 10,  player = false }
@@ -57,34 +57,6 @@ function ships:_init()
 	self.reverseSpeed = self.speed/3
 end
 
-function ships:playerShipInit()
-  self.player = true
-  self:selectIndividual()
-  print(self.name.." was unselected as part of the init function, the selected status has now been returned to "..tostring(self.selected))
-end
-
-function ships:setTypeKestrel()
-  self.name = "Kestrel"
-  self.speed = 10
-  self.class = classes.mediumClass
-  self.behaviour = behave.PlayerPreset1
-  self.turnSpeed = 6
-end
-
-function ships:setTypePixie()
-  self.name = "Pixie"
-  self.speed = 15
-  self.class = classes.lightClass
-  self.behaviour = behave.PlayerPreset1
-  self.turnSpeed = 10
-end
-
-function ships:pirateInit()
-  self.name = "Pirate Raider"
-  self.behaviour = behave.NeutralPreset1
-  self.alliance = alliances:getAlliance("Pirates")
-end
-
 function ships:getShipPos()
   return self.x, self.y, self.vec
 end
@@ -115,6 +87,10 @@ function placeNPCWP(NPCShip)
       NPCShip.validWaypoint = true
     end
   end
+
+  if usingMovement2 then
+    NPCShip.movement2Angle = getWpAngle(NPCShip)
+  end
 end
 
 
@@ -138,10 +114,6 @@ function placeWaypoint()
 
   if usingMovement2 then
     setShip.movement2Angle = getWpAngle(setShip)
-    waypointVec = vector(setShip.movement2Angle,1)
-    --[[waypointVec = vector(1,0)
-    waypointVec.rotateInPlace(movement2Angle)]]
-    setShip.waypoint.waypointVec = waypointVec
   end
 end
 
@@ -196,6 +168,7 @@ function shipBuilder:unselectSelectedShips()
 end
 
 counter = 0
+
 function ships:behave()
   if self.behaviour.aggression == 10 then
     placeNPCWP(self)
@@ -207,116 +180,145 @@ end
 classes = {}
 classes.lightClass = {-15, -15, 15, -15, 0, 15}
 classes.mediumClass = {-20, -20, 20, -20, 0, 20}
+classes.largeClass = {-30, -30, 30, -30, 0, 30}
+classes.hugeClass = {-35, -35, 35, -35, 0, 35}
+
+function ships:playerShipInit()
+  player = self
+  self.player = true
+  self:selectIndividual()
+  self.behaviour = behave.PlayerPreset1
+  print(self.name.." was unselected as part of the init function, the selected status has now been returned to "..tostring(self.selected))
+end
+
+function ships:setTypeLeviathan()
+  self.name = "Leviathan"
+  self.speed = 2
+  self.turnSpeed = 2
+  self.class = classes.hugeClass
+  self.behaviour = behave.NeutralPreset1
+end
+
+
+function ships:setTypeGoliath()
+  self.name = "Goliath"
+  self.speed = 3
+  self.turnSpeed = 3
+  self.class = classes.largeClass
+  self.behaviour = behave.NeutralPreset1
+end
+
+function ships:setTypeKestrel()
+  self.name = "Kestrel"
+  self.speed = 10
+  self.turnSpeed = 6
+  self.class = classes.mediumClass
+  self.behaviour = behave.NeutralPreset1
+end
+
+function ships:setTypePixie()
+  self.name = "Pixie"
+  self.speed = 25
+  self.turnSpeed = 10
+  self.class = classes.lightClass
+  self.behaviour = behave.NeutralPreset1
+end
+
+function ships:setTypeRaider()
+  self.name = "Raider"
+  self.speed = 9.5
+  self.turnSpeed = 6
+  self.behaviour = behave.NeutralPreset1
+  self.class = classes.mediumClass
+  self.alliance = alliances:getAlliance("Pirates")
+end
+
+function ships:pirateInit()
+  self.behaviour = behave.EnemyPreset1
+  self.player = false
+end
+
+function shipBuilder:genLeviathanPlayerShip()
+  local playerShip = ships.create()
+  table.insert(shipsList, playerShip)
+  ship = shipsList[#shipsList]
+
+	ship:_init()
+  ship:setTypeLeviathan()
+  ship:playerShipInit()
+  print(ship.turnSpeed)
+
+  local x,y = ship:getShipPos()
+  shipBuilder:defineBasicShipPhysics(ship,x,y)
+end
+
+function shipBuilder:genGoliathPlayerShip()
+  local playerShip = ships.create()
+  table.insert(shipsList, playerShip)
+  ship = shipsList[#shipsList]
+
+	ship:_init()
+  ship:setTypeGoliath()
+  ship:playerShipInit()
+  print(ship.turnSpeed)
+
+  local x,y = ship:getShipPos()
+  shipBuilder:defineBasicShipPhysics(ship,x,y)
+end
 
 function shipBuilder:genKestrelPlayerShip()
   local playerShip = ships.create()
-
   table.insert(shipsList, playerShip)
-  --print(#shipsList)
-  for i = 1,#shipsList do
-    ship = shipsList[i]
-  end
+  ship = shipsList[#shipsList]
 
 	ship:_init()
-
   ship:setTypeKestrel()
   ship:playerShipInit()
+  print(ship.turnSpeed)
 
-  player = ship
-
-  local x,y = player:getShipPos()
-  playerX = x
-  playerY = y
-
-	--shipsList.playerShip = { --[[speed = playerShip.speed, turnSpeed = playerShip.turnSpeed]] }
-	ship.body = love.physics.newBody( world, playerX, playerY, "dynamic")
-    playerBody = ship.body
-
-	ship.shape = love.physics.newPolygonShape(unpack(ship.class))--love.physics.newRectangleShape( 30, 40 )
-    playerShape = ship.shape
-
-  ship.fixture = love.physics.newFixture(playerBody, playerShape)
-    playerFixture = ship.fixture
-
-	playerBody:setAngle(math.pi)
-  playerFixture:setRestitution(2)
-  playerFixture:setMask(1,2)
-  playerBody:setAngularDamping(2)
-  playerBody:setLinearDamping(2)
+  local x,y = ship:getShipPos()
+  shipBuilder:defineBasicShipPhysics(ship,x,y)
 end
 
 function shipBuilder:genPixiePlayerShip()
   local playerShip = ships.create()
-
   table.insert(shipsList, playerShip)
-  --print(#shipsList)
-  for i = 1,#shipsList do
-    ship = shipsList[i]
-  end
+  ship = shipsList[#shipsList]
 
 	ship:_init()
-
   ship:setTypePixie()
   ship:playerShipInit()
-
-  player = ship
-
-  local x,y = player:getShipPos()
-  playerX = x
-  playerY = y
-
-	--shipsList.playerShip = { --[[speed = playerShip.speed, turnSpeed = playerShip.turnSpeed]] }
-	ship.body = love.physics.newBody( world, playerX, playerY, "dynamic")
-    playerBody = ship.body
-
-	ship.shape = love.physics.newPolygonShape(unpack(classes.lightClass))--love.physics.newRectangleShape( 30, 40 )
-    playerShape = ship.shape
-
-  ship.fixture = love.physics.newFixture(playerBody, playerShape)
-    playerFixture = ship.fixture
-
-	playerBody:setAngle(math.pi)
-  playerFixture:setRestitution(2)
-  playerFixture:setMask(1,2)
-  playerBody:setAngularDamping(2)
-  playerBody:setLinearDamping(2)
-end
-
-function shipBuilder:genBasicEnemyShip()
-  local basicShip = ships.create()
-
-  table.insert(shipsList, basicShip)
-  for i = 1,#shipsList do
-    ship = shipsList[i]
-  end
-
-	ship:_init()
-  ship:pirateInit()
-
-	--table.insert(basicEnemy, shipsList)
-  basicEnemy = ship
+  print(ship.turnSpeed)
 
   local x,y = ship:getShipPos()
-  basicEnemyX = x
-  basicEnemyY = y
-
-	--shipsList.basicEnemy = { --[[speed = basicEnemy.speed, turnSpeed = basicEnemy.turnSpeed]] }
-	ship.body = love.physics.newBody( world, basicEnemyX, basicEnemyY, "dynamic")
-    basicEnemyBody = ship.body
-
-	ship.shape = love.physics.newPolygonShape(unpack(classes.lightClass))--love.physics.newRectangleShape( 30, 40 )
-    basicEnemyShape = ship.shape
-
-  ship.fixture = love.physics.newFixture(basicEnemyBody, basicEnemyShape)
-    basicEnemyFixture = ship.fixture
-
-	basicEnemyBody:setAngle(0)
-  basicEnemyFixture:setRestitution(2)
-  basicEnemyFixture:setMask(1,2)
-  basicEnemyBody:setAngularDamping(0.1)
-  basicEnemyBody:setLinearDamping(1)
+  shipBuilder:defineBasicShipPhysics(ship,x,y)
 end
 
+function shipBuilder:genBasicPirateShip()
+  local basicShip = ships.create()
+  table.insert(shipsList, basicShip)
+  ship = shipsList[#shipsList]
+
+	ship:_init()
+  ship:setTypeRaider()
+  ship:pirateInit()
+  print(ship.turnSpeed)
+
+  local x,y = ship:getShipPos()
+  shipBuilder:defineBasicShipPhysics(ship,x,y)
+end
+
+function shipBuilder:defineBasicShipPhysics(ship,x,y)
+  ship.body = love.physics.newBody( world, x, y, "dynamic")
+	ship.shape = love.physics.newPolygonShape(unpack(ship.class))
+  ship.fixture = love.physics.newFixture(ship.body, ship.shape)
+
+	ship.body:setAngle(math.pi)
+  ship.fixture:setRestitution(2)
+  ship.fixture:setMask(1,2)
+  ship.body:setAngularDamping(2)
+  ship.body:setLinearDamping(2)
+end
 
 
 function basicObject()
@@ -377,7 +379,7 @@ function shipsThink()
     ship.shipVec = vector.new(ship.x, ship.y)
 
 
-    if usingMovement2 and ship.player then
+    if usingMovement2 then
       movement:rotate2(ship)
       movement:movement2(ship)
     else

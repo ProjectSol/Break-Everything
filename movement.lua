@@ -3,7 +3,8 @@ movement = {}
 function movement:movement(ship)
 	if ship.validWaypoint and ship.accel then
 		local angle = ship.body:getAngle() + math.pi/2
-		local playerDx = 10 * ship.speed * math.cos(angle)
+
+		local playerDx = classModifier * ship.speed * math.cos(angle)
 		local playerDy = 10 * ship.speed * math.sin(angle)
 
 		ship.body:setLinearVelocity(playerDx,playerDy)
@@ -26,7 +27,7 @@ end
 function movement:rotate(ship)
 	--print(ship.name, ship.validWaypoint, ship.accel, ship.body:getAngle())
   if ship.validWaypoint and ship.accel then
-    local rotSpeed = player.turnSpeed/100
+    local rotSpeed = ship.turnSpeed/100
 
     local sA = ship.body:getAngle()
     local tA = getWpAngle(ship)+math.pi/2
@@ -75,7 +76,7 @@ end
 function movement:rotate2(ship)
 	--print(ship.name, ship.validWaypoint, ship.accel, ship.body:getAngle())
   if ship.validWaypoint and ship.accel then
-    local rotSpeed = player.turnSpeed/100
+    local rotSpeed = ship.turnSpeed/100
 
     local sA = ship.body:getAngle()
     local tA = ship.movement2Angle+math.pi/2--getWpAngle(ship)+math.pi/2
@@ -132,6 +133,7 @@ function movement:calcPlayerVector()
 end
 
 function movement:movement2(ship)
+	print(ship.movement2Angle, ship.validWaypoint)
 	if ship.validWaypoint and ship.movement2Angle then
 		local angle2 = ship.movement2Angle+math.pi
 		local angle = ship.body:getAngle()+math.pi/2

@@ -10,7 +10,7 @@ defaultFont = lg.newFont(20)
 font = love.graphics.newFont()
 bypass = false
 
-function math.angle(x1,y1, x2,y2) 
+function math.angle(x1,y1, x2,y2)
 	return math.atan2(y2-y1, x2-x1)
 end
 
@@ -65,12 +65,14 @@ function love.load()
 	allianceSys:newAlliance("Unaligned", UnknownShip)
 	allianceSys:newAlliance("Pirates", Red)
 	--allianceSys:newAlliance("SuperHappyFunLand", Purple)
-	for i = 1,2 do
+	for i = 1,1 do
+		shipBuilder:genLeviathanPlayerShip()
+		shipBuilder:genGoliathPlayerShip()
 		shipBuilder:genKestrelPlayerShip()
 		shipBuilder:genPixiePlayerShip()
 	end
 	for i = 1,3 do
-		shipBuilder:genBasicEnemyShip()
+		shipBuilder:genBasicPirateShip()
 	end
 
 
