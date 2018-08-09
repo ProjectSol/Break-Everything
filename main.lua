@@ -58,16 +58,21 @@ function love.load()
 	Sepia = {94/255,38/255,18/255} UnknownShip = {189/255,195/255,199/255}
 	Default = {1,1,1}
 
+
+	usingMovement2 = true
+
 	--basicWalls()
 	allianceSys:newAlliance("Unaligned", UnknownShip)
 	allianceSys:newAlliance("Pirates", Red)
 	--allianceSys:newAlliance("SuperHappyFunLand", Purple)
+	for i = 1,2 do
+		shipBuilder:genKestrelPlayerShip()
+		shipBuilder:genPixiePlayerShip()
+	end
+	for i = 1,3 do
+		shipBuilder:genBasicEnemyShip()
+	end
 
-	shipBuilder:genBasicPlayerShip()
-	shipBuilder:genBasicPlayerShip()
-	shipBuilder:genBasicEnemyShip()
-	shipBuilder:genBasicEnemyShip()
-	shipBuilder:genBasicEnemyShip()
 
 	--local player = shipBuilder:getSelectedPlayerShip()
 	camera = Camera(player.x, player.y)
@@ -115,6 +120,9 @@ function love.keypressed( key, scancode, isrepeat )
 	if key == 'tab' then
 		--print("Now we should be changing ship")
 		shipSelection:nextPlayerShip()
+		for i = 1,#shipsList do
+			print("DebugRun: "..tostring(shipsList[i].selected))
+		end
 	end
 
 	local err = tonumber(key)
@@ -127,8 +135,13 @@ function love.keypressed( key, scancode, isrepeat )
  end
 
 function love.mousepressed(x, y, button)
+	shipsMouseRunBool = true
+	--print('This triggers before thing')
 	gui.buttonCheck( x, y, button )
-	shipsThinkMouse(button)
+	--print('This triggers after thing')
+	if shipsMouseRunBool == true then
+		shipsThinkMouse(button)
+	end
 end
 
 function love.mousereleased(x, y, button, isTouch)
@@ -173,6 +186,8 @@ function love.draw()
 	love.graphics.setLineWidth(1)
 
 	drawWaypoints()
+	local x,y = camera:worldCoords(love.mouse.getPosition())
+	love.graphics.print(x.." X, "..y.." Y",x+30,y+60)
 
 	camControl:cameraMovement()
 	camera:detach()

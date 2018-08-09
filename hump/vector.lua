@@ -35,6 +35,22 @@ local function new(x,y)
 end
 local zero = new(0,0)
 
+local function fromPolar(angle, radius)
+	radius = radius or 1
+	return new(cos(angle) * radius, sin(angle) * radius)
+end
+
+local function randomDirection(len_min, len_max)
+	len_min = len_min or 1
+	len_max = len_max or len_min
+
+	assert(len_max > 0, "len_max must be greater than zero")
+	assert(len_max >= len_min, "len_max must be greater than or equal to len_min")
+	
+	return fromPolar(math.random() * 2*math.pi,
+	                 math.random() * (len_max-len_min) + len_min)
+end
+
 local function isvector(v)
 	return type(v) == 'table' and type(v.x) == 'number' and type(v.y) == 'number'
 end
@@ -96,6 +112,10 @@ end
 function vector.permul(a,b)
 	assert(isvector(a) and isvector(b), "permul: wrong argument types (<vector> expected)")
 	return new(a.x*b.x, a.y*b.y)
+end
+
+function vector:toPolar()
+	return new(atan2(self.x, self.y), self:len())
 end
 
 function vector:len2()
@@ -187,5 +207,12 @@ end
 
 
 -- the module
-return setmetatable({new = new, isvector = isvector, zero = zero},
-	{__call = function(_, ...) return new(...) end})
+return setmetatable({
+	new             = new,
+	fromPolar       = fromPolar,
+	randomDirection = randomDirection,
+	isvector        = isvector,
+	zero            = zero
+}, {
+	__call = function(_, ...) return new(...) end
+})
