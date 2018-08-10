@@ -20,7 +20,7 @@ function UI:movementElements()
     for i = 1,#shipsList do
       local ship = shipsList[i]
       if ship.player and ship.selected then
-        max = ship.maxSpeed
+        max = ship.speed
         min = ship.reverseSpeed
         current = ship.currSpeed
         speedPercent = ship.speedPercent
@@ -30,7 +30,7 @@ function UI:movementElements()
       end
     end
 
-    if max then
+    if max ~= nil then
       accelerationPanel1:setPos( lg.getWidth()/2-lg.getWidth()/4, 20)
       accelerationPanel1:setSize( AccelPanelWidthConstant, 50 )
       accelerationPanel1:setTextColor( 0, 0, 0 )
@@ -58,7 +58,8 @@ function UI:movementElements()
       local ship = shipsList[i]
       if ship.player and ship.selected then
         accelPanelNum = i
-        max = ship.maxSpeed
+        max = ship.speed
+        ship.reverseSpeed = -ship.speed
         min = ship.reverseSpeed
         current = ship.currSpeed
         speedPercent = ship.speedPercent
@@ -67,7 +68,7 @@ function UI:movementElements()
         max = nil
       end
     end
-    if max then
+    if max ~= nil then
       accelerationPanel2:setPos( lg.getWidth()/2-lg.getWidth()/4, 20)
       accelerationPanel2:setSize( AccelPanelWidthConstant, 50 )
       accelerationPanel2:setTextColor( 0, 0, 0 )

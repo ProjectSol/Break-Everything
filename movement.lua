@@ -138,10 +138,11 @@ function movement:movement2(ship)
 		local angle2 = ship.movement2Angle+math.pi
 		local angle = ship.body:getAngle()+math.pi/2
 		ship.currSpeed = movement:calcCurrSpeed(ship)
-		local playerDx = 10 * ship.currSpeed * -math.cos(angle)
-		local playerDy = 10 * ship.currSpeed * -math.sin(angle)
+		local playerDx = 10 * ship.currSpeed * math.cos(angle)
+		local playerDy = 10 * ship.currSpeed * math.sin(angle)
 
 		ship.body:setLinearVelocity(playerDx,playerDy)
+		--ship.body:applyLinearImpulse(playerDx,playerDy)
 		--local currPlayer = shipBuilder:getSelectedPlayerShip()
 		if ship.player and ship.selected and cameraLock == true then
 			camera:lookAt(ship.body:getX(), ship.body:getY())
@@ -151,16 +152,16 @@ function movement:movement2(ship)
 end
 
 function movement:calcCurrSpeed(ship)
-	local acceleration = ship.accel
+	local acceleration = ship.accel/10
 	local current = ship.currSpeed
-	local projected = 5
+	ship.reverseSpeed = -ship.speed
 	--print(projected, ship.speedPercent)
 	if ship.speedPercent > 0 then
 			--print(projected, ship.speedPercent)
-		projected = -ship.maxSpeed*ship.speedPercent
+		projected = ship.speed*ship.speedPercent
 			--print(projected)
 	else
-		projected = -ship.reverseSpeed*ship.speedPercent
+		projected = ship.reverseSpeed*ship.speedPercent
 	end
 	--print(projected)
 

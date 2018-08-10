@@ -18,6 +18,8 @@ function systems:assignDesiredSpeedOnClick(xPos,width,shipNo)
   --print(newWidth,width,currSpeedPercent)
 
   local speedPercent = newWidth/width
+  speedPercent = tostring(speedPercent)
+  speedPercent = tonumber(string.format("%.3f", speedPercent))
 
   ship.speedPercent = speedPercent
 end

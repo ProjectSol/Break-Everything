@@ -40,7 +40,7 @@ function ships:_init()
   self.alliance = alliances:getAlliance("Unaligned")
   self.speed = 5
   self.turnSpeed = 2
-  self.accel = 2.5
+  self.accel = 1
   self.x = 30+50*(self.id-1)
   self.behaviour = behave.EnemyPreset1
   self.validWaypoint = false
@@ -51,9 +51,8 @@ function ships:_init()
   self.waypoint = nil
   self.wpVec = nil
   self.movement2Angle = 0
-  self.maxSpeed = self.speed
   self.currSpeed = 0
-  self.speedPercent = 1
+  self.speedPercent = 0
 	self.reverseSpeed = self.speed/3
 end
 
@@ -196,6 +195,7 @@ function ships:setTypeLeviathan()
   self.speed = 2
   self.turnSpeed = 2
   self.class = classes.hugeClass
+  self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1
 end
 
@@ -205,6 +205,7 @@ function ships:setTypeGoliath()
   self.speed = 3
   self.turnSpeed = 3
   self.class = classes.largeClass
+  self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1
 end
 
@@ -213,6 +214,7 @@ function ships:setTypeKestrel()
   self.speed = 10
   self.turnSpeed = 6
   self.class = classes.mediumClass
+  self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1
 end
 
@@ -221,6 +223,7 @@ function ships:setTypePixie()
   self.speed = 25
   self.turnSpeed = 10
   self.class = classes.lightClass
+  self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1
 end
 
@@ -228,14 +231,16 @@ function ships:setTypeRaider()
   self.name = "Raider"
   self.speed = 9.5
   self.turnSpeed = 6
-  self.behaviour = behave.NeutralPreset1
   self.class = classes.mediumClass
-  self.alliance = alliances:getAlliance("Pirates")
+  self.x = self.x-(self.class[1]*self.id)
+  self.behaviour = behave.NeutralPreset1
 end
 
 function ships:pirateInit()
   self.behaviour = behave.EnemyPreset1
   self.player = false
+  self.speedPercent = 1
+  self.alliance = alliances:getAlliance("Pirates")
 end
 
 function shipBuilder:genLeviathanPlayerShip()
@@ -246,7 +251,6 @@ function shipBuilder:genLeviathanPlayerShip()
 	ship:_init()
   ship:setTypeLeviathan()
   ship:playerShipInit()
-  print(ship.turnSpeed)
 
   local x,y = ship:getShipPos()
   shipBuilder:defineBasicShipPhysics(ship,x,y)
@@ -260,7 +264,6 @@ function shipBuilder:genGoliathPlayerShip()
 	ship:_init()
   ship:setTypeGoliath()
   ship:playerShipInit()
-  print(ship.turnSpeed)
 
   local x,y = ship:getShipPos()
   shipBuilder:defineBasicShipPhysics(ship,x,y)
@@ -274,7 +277,6 @@ function shipBuilder:genKestrelPlayerShip()
 	ship:_init()
   ship:setTypeKestrel()
   ship:playerShipInit()
-  print(ship.turnSpeed)
 
   local x,y = ship:getShipPos()
   shipBuilder:defineBasicShipPhysics(ship,x,y)
@@ -288,7 +290,6 @@ function shipBuilder:genPixiePlayerShip()
 	ship:_init()
   ship:setTypePixie()
   ship:playerShipInit()
-  print(ship.turnSpeed)
 
   local x,y = ship:getShipPos()
   shipBuilder:defineBasicShipPhysics(ship,x,y)
@@ -302,7 +303,6 @@ function shipBuilder:genBasicPirateShip()
 	ship:_init()
   ship:setTypeRaider()
   ship:pirateInit()
-  print(ship.turnSpeed)
 
   local x,y = ship:getShipPos()
   shipBuilder:defineBasicShipPhysics(ship,x,y)
@@ -345,19 +345,6 @@ function drawWaypoints()
     local y = ship.body:getY()
     local wX,wY
 
-		--[[if ship.validWaypoint and usingMovement2 and ship.player then
-      local offsetX,offsetY = waypoint.globalVec:unpack()
-      wX, wY = ship.x+offsetX, ship.y+offsetY
-      --print(ship.name,wX,wY,offsetX,offsetY)
-			love.graphics.setColor(255, 255, 255)
-			love.graphics.circle("fill", wX, wY, 2)
-      love.graphics.setColor(1,1,0)
-      love.graphics.print(offsetX.." X, "..offsetY.." Y",wX+30,wY+30)
-      love.graphics.print(wX.." X, "..wY.." Y",wX+30,wY)
-      love.graphics.print(x.." X, "..y.." Y",x+30,y)
-  		love.graphics.setColor(255,255,255)
-  		love.graphics.line( wX, wY, x, y )
-    elseif ship.validWaypoint then]]
     if ship.validWaypoint then
       love.graphics.setColor(255, 255, 255)
 			love.graphics.circle("fill", waypoint.x, waypoint.y, 2)
@@ -377,7 +364,6 @@ function shipsThink()
     ship.x = ship.body:getX()
     ship.y = ship.body:getY()
     ship.shipVec = vector.new(ship.x, ship.y)
-
 
     if usingMovement2 then
       movement:rotate2(ship)
