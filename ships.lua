@@ -192,8 +192,9 @@ end
 
 function ships:setTypeLeviathan()
   self.name = "Leviathan"
-  self.speed = 2
+  self.speed = 5
   self.turnSpeed = 2
+  self.accel = 0.5
   self.class = classes.hugeClass
   self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1
@@ -202,7 +203,7 @@ end
 
 function ships:setTypeGoliath()
   self.name = "Goliath"
-  self.speed = 3
+  self.speed = 6
   self.turnSpeed = 3
   self.class = classes.largeClass
   self.x = self.x-(self.class[1]*self.id)
@@ -222,6 +223,7 @@ function ships:setTypePixie()
   self.name = "Pixie"
   self.speed = 25
   self.turnSpeed = 10
+  self.accel = 3
   self.class = classes.lightClass
   self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1
