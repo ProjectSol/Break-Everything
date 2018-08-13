@@ -79,6 +79,9 @@ function UI:movementElements()
       lg.setColor(0,0.8,0.8)
     end
   end
+  function accelerationPanel2:onReleased()
+    
+  end
   function accelerationPanel2:doClick()
     systems:assignDesiredSpeedOnClick(accelerationPanel2:getPos(), AccelPanelWidthConstant, accelPanelNum)
     shipsMouseRunBool = false

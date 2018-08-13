@@ -167,7 +167,7 @@ function mouseGrabToggle()
 	end
 end
 
-function closestToZero(a, b, c, d, e, f)
+function closestToZero(a, b, c, d)
   local test = math.min(math.abs(a), math.abs(b), math.abs(c), math.abs(d))
   if math.abs(a) == test then
     return a
