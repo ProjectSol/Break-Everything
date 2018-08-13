@@ -246,8 +246,8 @@ function ships:pirateInit()
 end
 
 function shipBuilder:genLeviathanPlayerShip()
-  local playerShip = ships.create()
-  table.insert(shipsList, playerShip)
+  local ship = ships.create()
+  table.insert(shipsList, ship)
   ship = shipsList[#shipsList]
 
 	ship:_init()
@@ -259,8 +259,8 @@ function shipBuilder:genLeviathanPlayerShip()
 end
 
 function shipBuilder:genGoliathPlayerShip()
-  local playerShip = ships.create()
-  table.insert(shipsList, playerShip)
+  local ship = ships.create()
+  table.insert(shipsList, ship)
   ship = shipsList[#shipsList]
 
 	ship:_init()
@@ -272,8 +272,8 @@ function shipBuilder:genGoliathPlayerShip()
 end
 
 function shipBuilder:genKestrelPlayerShip()
-  local playerShip = ships.create()
-  table.insert(shipsList, playerShip)
+  local ship = ships.create()
+  table.insert(shipsList, ship)
   ship = shipsList[#shipsList]
 
 	ship:_init()
@@ -285,8 +285,8 @@ function shipBuilder:genKestrelPlayerShip()
 end
 
 function shipBuilder:genPixiePlayerShip()
-  local playerShip = ships.create()
-  table.insert(shipsList, playerShip)
+  local ship = ships.create()
+  table.insert(shipsList, ship)
   ship = shipsList[#shipsList]
 
 	ship:_init()
@@ -297,13 +297,65 @@ function shipBuilder:genPixiePlayerShip()
   shipBuilder:defineBasicShipPhysics(ship,x,y)
 end
 
-function shipBuilder:genBasicPirateShip()
-  local basicShip = ships.create()
-  table.insert(shipsList, basicShip)
+function shipBuilder:genPirateRaider()
+  local ship = ships.create()
+  table.insert(shipsList, ship)
   ship = shipsList[#shipsList]
 
 	ship:_init()
   ship:setTypeRaider()
+  ship:pirateInit()
+
+  local x,y = ship:getShipPos()
+  shipBuilder:defineBasicShipPhysics(ship,x,y)
+end
+
+function shipBuilder:genPirateLeviathan()
+  local ship = ships.create()
+  table.insert(shipsList, ship)
+  ship = shipsList[#shipsList]
+
+	ship:_init()
+  ship:setTypeLeviathan()
+  ship:pirateInit()
+
+  local x,y = ship:getShipPos()
+  shipBuilder:defineBasicShipPhysics(ship,x,y)
+end
+
+function shipBuilder:genPirateGoliath()
+  local ship = ships.create()
+  table.insert(shipsList, ship)
+  ship = shipsList[#shipsList]
+
+	ship:_init()
+  ship:setTypeGoliath()
+  ship:pirateInit()
+
+  local x,y = ship:getShipPos()
+  shipBuilder:defineBasicShipPhysics(ship,x,y)
+end
+
+function shipBuilder:genPirateGoliath()
+  local ship = ships.create()
+  table.insert(shipsList, ship)
+  ship = shipsList[#shipsList]
+
+	ship:_init()
+  ship:setTypeGoliath()
+  ship:pirateInit()
+
+  local x,y = ship:getShipPos()
+  shipBuilder:defineBasicShipPhysics(ship,x,y)
+end
+
+function shipBuilder:genPiratePixie()
+  local ship = ships.create()
+  table.insert(shipsList, ship)
+  ship = shipsList[#shipsList]
+
+	ship:_init()
+  ship:setTypePixie()
   ship:pirateInit()
 
   local x,y = ship:getShipPos()
