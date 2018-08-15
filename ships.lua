@@ -38,9 +38,10 @@ function ships:_init()
   self.name = "unnamedShip"
   self.class = classes.mediumClass
   self.alliance = alliances:getAlliance("Unaligned")
-  self.speed = 5
+  self.speed = 6
   self.turnSpeed = 2
   self.accel = 1
+  self.decel = 0.75
   self.x = 30+50*(self.id-1)
   self.behaviour = behave.EnemyPreset1
   self.validWaypoint = false
@@ -195,6 +196,7 @@ function ships:setTypeLeviathan()
   self.speed = 5
   self.turnSpeed = 2
   self.accel = 0.5
+  self.decel = 0.25
   self.class = classes.hugeClass
   self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1
@@ -221,9 +223,10 @@ end
 
 function ships:setTypePixie()
   self.name = "Pixie"
-  self.speed = 25
+  self.speed = 15
   self.turnSpeed = 10
   self.accel = 3
+  self.decel = 2.75
   self.class = classes.lightClass
   self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1

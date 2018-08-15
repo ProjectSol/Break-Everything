@@ -21,7 +21,7 @@ function UI:movementElements()
       local ship = shipsList[i]
       if ship.player and ship.selected then
         max = ship.speed
-        min = ship.reverseSpeed
+        reverseOffset = ship.reverseSpeed/max
         current = ship.currSpeed
         speedPercent = ship.speedPercent
         break
@@ -32,7 +32,7 @@ function UI:movementElements()
 
     if max ~= nil then
       accelerationPanel1:setPos( lg.getWidth()/2-lg.getWidth()/4, 20)
-      accelerationPanel1:setSize( AccelPanelWidthConstant, 50 )
+      accelerationPanel1:setSize( AccelPanelWidthConstant*(1+reverseOffset), 50 )
       accelerationPanel1:setTextColor( 0, 0, 0 )
       --lg.setLineWidth(3)
       lg.setColor(250,50,50)
@@ -47,11 +47,13 @@ function UI:movementElements()
     end
   end
 
+  shipsMouseRunBool = true
   local accelerationPanel2 = gui.create("button")
   function accelerationPanel2:paint(w,h)
     local max = nil
     local min
     accelPanelNum = nil
+    reverseOffset = nil
     local current
     local speedPercent
     for i = 1,#shipsList do
@@ -59,8 +61,7 @@ function UI:movementElements()
       if ship.player and ship.selected then
         accelPanelNum = i
         max = ship.speed
-        ship.reverseSpeed = -ship.speed
-        min = ship.reverseSpeed
+        reverseOffset = ship.reverseSpeed/max
         current = ship.currSpeed
         speedPercent = ship.speedPercent
         break
@@ -69,21 +70,28 @@ function UI:movementElements()
       end
     end
     if max ~= nil then
-      accelerationPanel2:setPos( lg.getWidth()/2-lg.getWidth()/4, 20)
+      if shipsMouseRunBool ~= true then
+        systems:assignDesiredSpeedOnClick(accelerationPanel2:getPos(), AccelPanelWidthConstant, accelPanelNum,reverseOffset)
+      end
       accelerationPanel2:setSize( AccelPanelWidthConstant, 50 )
+      accelerationPanel2:setPos( (lg.getWidth()/2-lg.getWidth()/4)-reverseOffset, 20)
       accelerationPanel2:setTextColor( 0, 0, 0 )
       accelerationPanel2:setText("")
       lg.setLineWidth(3)
-      lg.setColor(1*speedPercent*2/3,0.5*1/3,0.5*1/3)
-      lg.rectangle('line',0,0,w*speedPercent,h)
+      lg.setColor(0.25,0.5,1)
+      lg.rectangle('line',-w*reverseOffset,0,w*speedPercent,h)
       lg.setColor(0,0.8,0.8)
     end
   end
   function accelerationPanel2:onReleased()
-    
+    shipsMouseRunBool = true
   end
+  --[[function accelerationPanel2:think()
+    if shipsMouseRunBool ~= true and max ~= nil then
+      systems:assignDesiredSpeedOnClick(accelerationPanel2:getPos(), AccelPanelWidthConstant, accelPanelNum)
+    end
+  end]]
   function accelerationPanel2:doClick()
-    systems:assignDesiredSpeedOnClick(accelerationPanel2:getPos(), AccelPanelWidthConstant, accelPanelNum)
     shipsMouseRunBool = false
     --print("Well done you did it")
   end

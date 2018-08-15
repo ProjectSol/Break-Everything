@@ -1,11 +1,13 @@
 movement = {}
 
 function movement:movement(ship)
+	--Deprecated, see movement2
 	if ship.validWaypoint and ship.accel then
 		local angle = ship.body:getAngle() + math.pi/2
 
-		local playerDx = classModifier * ship.speed * math.cos(angle)
+		local playerDx = 10 * ship.speed * math.cos(angle)
 		local playerDy = 10 * ship.speed * math.sin(angle)
+
 
 		ship.body:setLinearVelocity(playerDx,playerDy)
 		--local currPlayer = shipBuilder:getSelectedPlayerShip()
@@ -133,7 +135,7 @@ function movement:calcPlayerVector()
 end
 
 function movement:movement2(ship)
-	print(ship.movement2Angle, ship.validWaypoint)
+	--print(ship.movement2Angle, ship.validWaypoint)
 	if ship.validWaypoint and ship.movement2Angle then
 		local angle2 = ship.movement2Angle+math.pi
 		local angle = ship.body:getAngle()+math.pi/2
@@ -153,20 +155,14 @@ end
 
 function movement:calcCurrSpeed(ship)
 	local acceleration = ship.accel/10
+	local deceleration = ship.decel/10
 	local current = ship.currSpeed
-	ship.reverseSpeed = -ship.speed
-	--print(projected, ship.speedPercent)
-	if ship.speedPercent > 0 then
-			--print(projected, ship.speedPercent)
-		projected = ship.speed*ship.speedPercent
-			--print(projected)
-	else
-		projected = ship.reverseSpeed*ship.speedPercent
-	end
-	--print(projected)
+	projected = ship.speed*ship.speedPercent
 
-	if current + acceleration < projected then
+	if current + acceleration < projected and projected > current then
 		current = current+acceleration
+	elseif current - deceleration > projected and projected < current then
+		current = current-deceleration
 	else
 		current = projected
 	end

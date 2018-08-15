@@ -72,8 +72,8 @@ function love.load()
 		shipBuilder:genPixiePlayerShip()
 	end
 	for i = 1,3 do
-		shipBuilder:genPirateRaider()
-		shipBuilder:genPirateLeviathan()
+		--shipBuilder:genPirateRaider()
+		--shipBuilder:genPirateLeviathan()
 	end
 
 
