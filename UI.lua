@@ -79,7 +79,7 @@ function UI:movementElements()
       accelerationPanel2:setText("")
       lg.setLineWidth(3)
       lg.setColor(0.25,0.5,1)
-      lg.rectangle('line',-w*reverseOffset,0,w*speedPercent,h)
+      lg.rectangle('line',0,0,w*speedPercent+w*reverseOffset,h)
       lg.setColor(0,0.8,0.8)
     end
   end
