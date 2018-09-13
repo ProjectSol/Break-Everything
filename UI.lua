@@ -9,7 +9,9 @@ function UI:movementElements()
   local min = nil
   local current = nil
   local speedPercent = nil
-  local AccelPanelWidthConstant = lg.getWidth()/2
+  local AccelPanelWidthConstant = lg.getWidth()/4
+  local AccelPanelXConstant = lg.getWidth()/10
+  local AccelPanelYConstant = lg.getHeight()-lg.getHeight()/10
 
   local accelerationPanel1 = gui.create("label")
   function accelerationPanel1:paint(w,h)
@@ -31,16 +33,11 @@ function UI:movementElements()
     end
 
     if max ~= nil then
-      accelerationPanel1:setPos( lg.getWidth()/2-lg.getWidth()/4, 20)
+      accelerationPanel1:setPos( AccelPanelXConstant,AccelPanelYConstant)
       accelerationPanel1:setSize( AccelPanelWidthConstant*(1+reverseOffset), 50 )
       accelerationPanel1:setTextColor( 0, 0, 0 )
-      --lg.setLineWidth(3)
-      lg.setColor(250,50,50)
+      lg.setColor(0.8,0.8,0.8)
       lg.rectangle('fill',0,0,w,h)
-      --lg.setColor(0,200,200)
-      --accelerationPanel1:setFont(titleText)
-      --lg.setFont(defaultFont)
-      --love.graphics.print(tonumber(string.format("%.3f", min)),-10,-10)
       accelerationPanel1:setText((speedPercent*100).."%")
     else
       accelerationPanel1:setText('')
@@ -73,13 +70,21 @@ function UI:movementElements()
       if shipsMouseRunBool ~= true then
         systems:assignDesiredSpeedOnClick(accelerationPanel2:getPos(), AccelPanelWidthConstant, accelPanelNum,reverseOffset)
       end
-      accelerationPanel2:setSize( AccelPanelWidthConstant, 50 )
-      accelerationPanel2:setPos( (lg.getWidth()/2-lg.getWidth()/4)-reverseOffset, 20)
+      accelerationPanel2:setSize( AccelPanelWidthConstant*(1+reverseOffset), 50 )
+      accelerationPanel2:setPos( AccelPanelXConstant-reverseOffset,AccelPanelYConstant)
       accelerationPanel2:setTextColor( 0, 0, 0 )
       accelerationPanel2:setText("")
+      local effectiveW = w/(1+reverseOffset)
       lg.setLineWidth(3)
-      lg.setColor(0.25,0.5,1)
-      lg.rectangle('line',0,0,w*speedPercent+w*reverseOffset,h)
+      lg.setColor(0.4,0.4,0.4)
+      lg.rectangle('line',0,0,effectiveW*speedPercent+effectiveW*reverseOffset,h)
+      lg.setColor(0.6,0.6,0.6)
+      local panH = accelerationPanel2:getHeight()
+      local revConstant = AccelPanelWidthConstant*reverseOffset
+      local vertices = {revConstant, 0, revConstant-10, -10, revConstant+10, -10}
+      lg.polygon('fill', unpack(vertices))
+      local vertices = {revConstant, panH, revConstant-10, panH+10, revConstant+10, panH+10}
+      lg.polygon('fill', unpack(vertices))
       lg.setColor(0,0.8,0.8)
     end
   end

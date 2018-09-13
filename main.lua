@@ -22,6 +22,7 @@ function checkCollision(x1,y1,w1,h1, x2,y2,w2,h2)
 end
 
 function love.load()
+
 	util = {}
 	function util.isInArea( x, y, x2, y2, w, h )
     if x >= x2 and x <= x2 + w and y >= y2 and y <= y2+h then
@@ -41,6 +42,7 @@ function love.load()
 	alliances = require "alliances"
 	camControl = require "camControl"
 	shipSelection = require "shipSelection"
+	nav = require "navigation"
 	UI = require "UI"
 
 
@@ -53,7 +55,7 @@ function love.load()
 	Emerald = {241/255,196/255,15/255} Purple = {142/255,68/255,173/255}
 	Asphalt = {56/255,75/255,97/255} Yellow = {241/255,196/255,15/255}
 	Pumpkin = {211/255,84/255,0} Red = {232/255,77/255,63/255}
-	Wheat = {139/255,126/255,102/255} Pink = {255/255,0,255/255}
+	Wheat = {139/255,126/255,102/255} Pink = {1,0,1}
 	Green = {34/255,139/255,34/255} Brown = {139/255,90/255,0}
 	Sepia = {94/255,38/255,18/255} UnknownShip = {189/255,195/255,199/255}
 	Default = {1,1,1}
@@ -63,7 +65,7 @@ function love.load()
 
 	--basicWalls()
 	allianceSys:newAlliance("Unaligned", UnknownShip)
-	allianceSys:newAlliance("Pirates", Red)
+	allianceSys:newAlliance("Pirates", Pumpkin)
 	--allianceSys:newAlliance("SuperHappyFunLand", Purple)
 	for i = 1,1 do
 		shipBuilder:genLeviathanPlayerShip()
@@ -71,9 +73,9 @@ function love.load()
 		shipBuilder:genKestrelPlayerShip()
 		shipBuilder:genPixiePlayerShip()
 	end
-	for i = 1,3 do
-		--shipBuilder:genPirateRaider()
-		--shipBuilder:genPirateLeviathan()
+	for i = 1,2 do
+		shipBuilder:genPirateRaider()
+		--shipBuilder:genPirateGoliath()
 	end
 
 
@@ -110,6 +112,11 @@ function love.update(dt)
 		gui.update()
 
 		shipsThink()
+		for i = 1,2 do
+			if love.mouse.isDown(i) and shipsMouseRunBool then
+				shipsThinkMouse(i)
+			end
+		end
 	end
 end
 
@@ -137,14 +144,17 @@ function love.keypressed( key, scancode, isrepeat )
 
  end
 
+clickedOnce = false
+
 function love.mousepressed(x, y, button)
 	shipsMouseRunBool = true
+	clickedOnce = true
 	--print('This triggers before thing')
 	gui.buttonCheck( x, y, button )
 	--print('This triggers after thing')
-	if shipsMouseRunBool == true then
+	--[[if shipsMouseRunBool == true then
 		shipsThinkMouse(button)
-	end
+	end]]
 end
 
 function love.mousereleased(x, y, button, isTouch)
@@ -183,15 +193,14 @@ end
 function love.draw()
 	gui.draw()
 	camera:attach()
+	nav:drawGrid()
 	--local currPlayer = shipBuilder:getSelectedPlayerShip()
 	drawBasicShips()
 
 	love.graphics.setLineWidth(1)
 
-	drawWaypoints()
+	love.graphics.setColor(1,1,1)
 	local x,y = camera:worldCoords(love.mouse.getPosition())
-	love.graphics.print(x.." X, "..y.." Y",x+30,y+60)
-
 	camControl:cameraMovement()
 	camera:detach()
 

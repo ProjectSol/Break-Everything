@@ -143,6 +143,7 @@ function movement:movement2(ship)
 		local playerDx = 10 * ship.currSpeed * math.cos(angle)
 		local playerDy = 10 * ship.currSpeed * math.sin(angle)
 
+
 		ship.body:setLinearVelocity(playerDx,playerDy)
 		--ship.body:applyLinearImpulse(playerDx,playerDy)
 		--local currPlayer = shipBuilder:getSelectedPlayerShip()
@@ -150,6 +151,13 @@ function movement:movement2(ship)
 			camera:lookAt(ship.body:getX(), ship.body:getY())
 		end
 		ship.shipVec = vector(ship.body:getX(), ship.body:getY())
+		directionVec = ship.shipVec:normalized()
+		--print(unpack(directionVec))
+		vecX,vecY = ship.waypoint.vec:unpack()
+		ship.waypoint.x,ship.waypoint.y = vecX,vecY
+
+		--ship.waypoint.y = ship.body:getY()+ship.waypoint.y
+
   end
 end
 
@@ -167,10 +175,6 @@ function movement:calcCurrSpeed(ship)
 		current = projected
 	end
 	return current
-end
-
-function movement:updateSpeedPercentange()
-
 end
 
 return movement

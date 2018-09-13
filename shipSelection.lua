@@ -102,7 +102,19 @@ function shipSelection:cntrlGroupSelect(num)
 
 end
 
-
+function shipSelection:clickSetTarget()
+  local mX, mY = love.mouse.getPosition()
+  local ship = shipBuilder:getSelectedPlayerShip()
+  local targetedShip = nil
+  for i = 1,#shipsList do
+    if shipsList[i].alliance ~= ship.alliance then
+      local mousedOver = shipsList[i].fixture:testPoint(mX,mY)
+      if mousedOver == true then
+        print('Success')
+      end
+    end
+  end
+end
 
 
 

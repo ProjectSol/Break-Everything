@@ -55,6 +55,9 @@ function ships:_init()
   self.currSpeed = 0
   self.speedPercent = 0
 	self.reverseSpeed = self.speed/3
+  self.waypointResetTimer = 0
+  self.resetting = true
+  self.targeting = nil
 end
 
 function ships:getShipPos()
@@ -108,6 +111,7 @@ function placeWaypoint()
   x,y = camera:worldCoords(x,y)
   local waypointVec = vector(x,y)
 
+  setShip.resetting = false
   setShip.waypoint = { x=x, y=y, movement2Angle = 0, vec = waypointVec }
   setShip.wpVec = waypointVec
   setShip.validWaypoint = true
@@ -167,6 +171,11 @@ function shipBuilder:unselectSelectedShips()
   end
 end
 
+function ships:setTarget()
+
+end
+
+
 counter = 0
 
 function ships:behave()
@@ -181,7 +190,11 @@ classes = {}
 classes.lightClass = {-15, -15, 15, -15, 0, 15}
 classes.mediumClass = {-20, -20, 20, -20, 0, 20}
 classes.largeClass = {-30, -30, 30, -30, 0, 30}
-classes.hugeClass = {-35, -35, 35, -35, 0, 35}
+classes.hugeClass = {-55, -55, 55, -55, 0, 55}
+
+function ships:setTargeting()
+
+end
 
 function ships:playerShipInit()
   player = self
@@ -194,7 +207,7 @@ end
 function ships:setTypeLeviathan()
   self.name = "Leviathan"
   self.speed = 5
-  self.turnSpeed = 2
+  self.turnSpeed = 0.5
   self.accel = 0.5
   self.decel = 0.25
   self.class = classes.hugeClass
@@ -206,7 +219,7 @@ end
 function ships:setTypeGoliath()
   self.name = "Goliath"
   self.speed = 6
-  self.turnSpeed = 3
+  self.turnSpeed = 1.5
   self.class = classes.largeClass
   self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1
@@ -215,7 +228,7 @@ end
 function ships:setTypeKestrel()
   self.name = "Kestrel"
   self.speed = 10
-  self.turnSpeed = 6
+  self.turnSpeed = 5
   self.class = classes.mediumClass
   self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1
@@ -224,7 +237,7 @@ end
 function ships:setTypePixie()
   self.name = "Pixie"
   self.speed = 15
-  self.turnSpeed = 10
+  self.turnSpeed = 7
   self.accel = 3
   self.decel = 2.75
   self.class = classes.lightClass
@@ -235,7 +248,7 @@ end
 function ships:setTypeRaider()
   self.name = "Raider"
   self.speed = 9.5
-  self.turnSpeed = 6
+  self.turnSpeed = 4.5
   self.class = classes.mediumClass
   self.x = self.x-(self.class[1]*self.id)
   self.behaviour = behave.NeutralPreset1
@@ -403,16 +416,15 @@ function drawWaypoints()
     local wX,wY
 
     if ship.validWaypoint then
-      love.graphics.setColor(255, 255, 255)
+      love.graphics.setColor(1,1,1)
 			love.graphics.circle("fill", waypoint.x, waypoint.y, 2)
-  		love.graphics.setColor(255,255,255)
+  		love.graphics.setColor(1,1,1)
   		love.graphics.line( waypoint.x, waypoint.y, x, y )
     end
-
 	end
 end
 
-
+waypointResetTimer = 0
 
 function shipsThink()
   for i = 1,#shipsList do
@@ -429,17 +441,30 @@ function shipsThink()
       movement:rotate(ship)
       movement:movement(ship)
     end
+
     ship:behave()
 
+    if ship.waypointResetTimer > 100 and ship.speedPercent == 0 and ship.resetting == true then
+      ship.waypoint = nil
+      ship.validWaypoint = nil
+      ship.waypointResetTimer = 0
+    elseif ship.resetting == true and ship.speedPercent == 0 then
+      ship.waypointResetTimer = ship.waypointResetTimer+1
+    else
+      ship.waypointResetTimer = 0
+    end
   end
 end
 
-function shipsThinkMouse()
-  placeWaypoint()
+function shipsThinkMouse(button)
+  if button == 2 then
+    placeWaypoint()
+  elseif button == 1 then
+    --bandBoxSelection()
+    shipSelection:clickSetTarget()
+  end
   for i = 1,#shipsList do
     local ship = shipsList[i]
-
-
 
   end
 end
