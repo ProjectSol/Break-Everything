@@ -61,7 +61,8 @@ function love.load()
 	Default = {1,1,1}
 
 
-	usingMovement2 = true
+	usingMovement2 = false
+	waypointResetTimer = 0
 
 	--basicWalls()
 	allianceSys:newAlliance("Unaligned", UnknownShip)
@@ -126,6 +127,13 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 	if key == 'space' then
 		systems:pause()
+	end
+	if key == 'p' then
+		if usingMovement2 then
+			usingMovement2 = false
+		else
+			usingMovement2 = true
+		end
 	end
 	if key == 'tab' then
 		--print("Now we should be changing ship")
@@ -196,6 +204,7 @@ function love.draw()
 	nav:drawGrid()
 	--local currPlayer = shipBuilder:getSelectedPlayerShip()
 	drawBasicShips()
+	drawWaypoints()
 
 	love.graphics.setLineWidth(1)
 

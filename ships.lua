@@ -272,6 +272,7 @@ function shipBuilder:genLeviathanPlayerShip()
 
   local x,y = ship:getShipPos()
   shipBuilder:defineBasicShipPhysics(ship,x,y)
+  ship.body:setLinearDamping(30)
 end
 
 function shipBuilder:genGoliathPlayerShip()
@@ -384,7 +385,7 @@ function shipBuilder:defineBasicShipPhysics(ship,x,y)
   ship.fixture = love.physics.newFixture(ship.body, ship.shape)
 
 	ship.body:setAngle(math.pi)
-  ship.fixture:setRestitution(2)
+  ship.fixture:setRestitution(1)
   ship.fixture:setMask(1,2)
   ship.body:setAngularDamping(2)
   ship.body:setLinearDamping(2)
@@ -408,23 +409,42 @@ function drawBasicShips()
 end
 
 function drawWaypoints()
-  for i = 1,#shipsList do
-		local ship = shipsList[i]
-		local waypoint = shipsList[i].waypoint
-    local x = ship.body:getX()
-    local y = ship.body:getY()
-    local wX,wY
+  if usingMovement2 then
+    for i = 1,#shipsList do
+		  local ship = shipsList[i]
+  		local waypoint = shipsList[i].waypoint
+      local x = ship.body:getX()
+      local y = ship.body:getY()
+      local angle = shipsList[i].movement2Angle
+      local vectorLen = 40
+      local vecX,vecY = -vectorLen*math.cos(angle), -vectorLen*math.sin(angle)
 
-    if ship.validWaypoint then
-      love.graphics.setColor(1,1,1)
-			love.graphics.circle("fill", waypoint.x, waypoint.y, 2)
-  		love.graphics.setColor(1,1,1)
-  		love.graphics.line( waypoint.x, waypoint.y, x, y )
-    end
-	end
+
+
+      if ship.validWaypoint then
+        love.graphics.setColor(1,1,1)
+  			love.graphics.circle("fill", vecX+x, vecY+y, 2)
+    		love.graphics.setColor(1,1,1)
+    		love.graphics.line( vecX+x, vecY+y, x, y )
+      end
+	 end
+  else
+    for i = 1,#shipsList do
+		  local ship = shipsList[i]
+  		local waypoint = shipsList[i].waypoint
+      local x = ship.body:getX()
+      local y = ship.body:getY()
+      local wX,wY
+
+      if ship.validWaypoint then
+        love.graphics.setColor(1,1,1)
+  			love.graphics.circle("fill", waypoint.x, waypoint.y, 2)
+    		love.graphics.setColor(1,1,1)
+    		love.graphics.line( waypoint.x, waypoint.y, x, y )
+      end
+	 end
+  end
 end
-
-waypointResetTimer = 0
 
 function shipsThink()
   for i = 1,#shipsList do
