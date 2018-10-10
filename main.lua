@@ -66,7 +66,7 @@ function love.load()
 
 	--basicWalls()
 	allianceSys:newAlliance("Unaligned", UnknownShip)
-	allianceSys:newAlliance("Pirates", Pumpkin)
+	allianceSys:newAlliance("Pirates", Red)
 	--allianceSys:newAlliance("SuperHappyFunLand", Purple)
 	for i = 1,1 do
 		shipBuilder:genLeviathanPlayerShip()
