@@ -42,6 +42,7 @@ function love.load()
 	alliances = require "alliances"
 	camControl = require "camControl"
 	shipSelection = require "shipSelection"
+	harpoints = require "hardpoints"
 	nav = require "navigation"
 	UI = require "UI"
 
@@ -78,6 +79,7 @@ function love.load()
 		shipBuilder:genPirateRaider()
 		--shipBuilder:genPirateGoliath()
 	end
+	hardpoints.giveBasicWeapons()
 
 
 	--local player = shipBuilder:getSelectedPlayerShip()

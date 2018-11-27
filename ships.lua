@@ -38,26 +38,44 @@ function ships:_init()
   self.name = "unnamedShip"
   self.class = classes.mediumClass
   self.alliance = alliances:getAlliance("Unaligned")
-  self.speed = 6
-  self.turnSpeed = 2
-  self.accel = 1
-  self.decel = 0.75
-  self.x = 30+50*(self.id-1)
+
+
+  self.hardpoints = {}
+  self.systems = {}
+  self.inventorySize = 15
+  self.inventory = {}
+  self.docking = false
+  self.dockingSize = nil
+  self.docked = {}
+
+
   self.behaviour = behave.EnemyPreset1
   self.validWaypoint = false
   self.player = false
   self.selected = false
+
+
+  self.x = 30+50*(self.id-1)
   self.y = 300
   self.shipVec = vector.new(self.x,self.y)
   self.waypoint = nil
   self.wpVec = nil
+
+
+  self.speed = 6
+  self.turnSpeed = 2
+  self.accel = 1
+  self.decel = 0.75
   self.movement2Angle = 0
   self.currSpeed = 0
   self.speedPercent = 0
 	self.reverseSpeed = self.speed/3
+
+
   self.waypointResetTimer = 0
   self.resetting = true
   self.targeting = nil
+
 end
 
 function ships:getShipPos()
@@ -487,6 +505,11 @@ function shipsThinkMouse(button)
     local ship = shipsList[i]
 
   end
+end
+
+function ships:installHardpoint(weaponry)
+  table.insert(self.hardpoints, weaponry)
+  print(weaponry.name.." added to "..self.name)
 end
 
 
