@@ -1,5 +1,13 @@
 shipSelection = {}
 
+
+function shipSelection:tabSwap()
+  shipSelection:nextPlayerShip()
+  for i = 1,#shipsList do
+    print("DebugRun: "..tostring(shipsList[i].selected))
+  end
+end
+
 function shipSelection:drawSidebar(width, height)
   sidebar = {}
   for i = 1,#shipsList do
@@ -60,9 +68,9 @@ function shipSelection:nextPlayerShip()
             print("Found has been set to true")
             break
           end
-        end
+        end --for k = prev,...
 
-        print("The ship has been found: "..tostring(found))
+        print("Ship Located: "..tostring(found))
 
         if found == false then
           print("second loop ran")
@@ -77,9 +85,9 @@ function shipSelection:nextPlayerShip()
           end
         end --if found
 
-      end --if ship.player ...
+      end --if found except it's the first one this time
 
-    end
+    end --if ship.player ...
   end
 end
 

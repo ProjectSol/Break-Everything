@@ -29,6 +29,7 @@ function weaponry:_init()
   self.heatThreshold = 100
   self.heatOnFire = 7
   self.coolOff = 4
+  self.maxRange = 500
 end
 
 function weaponry:setName(name)

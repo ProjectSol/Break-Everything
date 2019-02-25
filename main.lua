@@ -44,8 +44,13 @@ function love.load()
 	shipSelection = require "shipSelection"
 	harpoints = require "hardpoints"
 	nav = require "navigation"
+	stars = require "starfieldGeneration"
 	UI = require "UI"
 
+	--love.window.setFullscreen( true, "desktop" )
+	local width, height = love.window.getDesktopDimensions()
+	love.window.width = width
+	love.window.height = height
 
 	shipsList = {}
 	love.physics.setMeter(64)
@@ -61,9 +66,22 @@ function love.load()
 	Sepia = {94/255,38/255,18/255} UnknownShip = {189/255,195/255,199/255}
 	Default = {1,1,1}
 
+	starCols = {	{1, 229/255, 229/255}, {222/255, 246/255, 1},
+								{222/255, 1, 228/255}, {249/255, 241/255, 222/255},
+								{249/255, 248/255, 222/255}, {228/255, 219/255, 1},
+								{1,1,1}, {188/255, 1, 231/255} }
+
+	starRed = {1, 229/255, 229/255} starBlue = {222/255, 246/255, 1}
+	starGreen = {222/255, 1, 228/255} starOrange = {249/255, 241/255, 222/255}
+	starYellow = {249/255, 248/255, 222/255} starPurple = {228/255, 219/255, 1}
+	starWhite = {1,1,1} starTeal = {188/255, 1, 231/255}
+
+
 
 	usingMovement2 = false
 	waypointResetTimer = 0
+
+	stars:generateGrid()
 
 	--basicWalls()
 	allianceSys:newAlliance("Unaligned", UnknownShip)
@@ -82,10 +100,10 @@ function love.load()
 	hardpoints.giveBasicWeapons()
 
 
-	--local player = shipBuilder:getSelectedPlayerShip()
-	camera = Camera(player.x, player.y)
-	camera.smoother = Camera.smooth.damped(10)
-	camControl:setCameraLock(true)
+	local player = shipBuilder:getSelectedPlayerShip()
+	camera = Camera(player.x, player.y);
+
+	love.window.setMode( 0, 0 )
 
 	UI:basicUI()
 	UI:movementElements()
@@ -137,12 +155,12 @@ function love.keypressed( key, scancode, isrepeat )
 			usingMovement2 = true
 		end
 	end
+	if key == 'y' and shipBuilder:getSelectedPlayerShip() then
+		camControl:flickerLockSetting()
+	end
 	if key == 'tab' then
 		--print("Now we should be changing ship")
-		shipSelection:nextPlayerShip()
-		for i = 1,#shipsList do
-			print("DebugRun: "..tostring(shipsList[i].selected))
-		end
+		shipselection:tabSwap()
 	end
 
 	local err = tonumber(key)
@@ -159,12 +177,7 @@ clickedOnce = false
 function love.mousepressed(x, y, button)
 	shipsMouseRunBool = true
 	clickedOnce = true
-	--print('This triggers before thing')
 	gui.buttonCheck( x, y, button )
-	--print('This triggers after thing')
-	--[[if shipsMouseRunBool == true then
-		shipsThinkMouse(button)
-	end]]
 end
 
 function love.mousereleased(x, y, button, isTouch)
@@ -201,10 +214,9 @@ function closestToZero(a, b, c, d)
 end
 
 function love.draw()
-	gui.draw()
 	camera:attach()
-	nav:drawGrid()
-	--local currPlayer = shipBuilder:getSelectedPlayerShip()
+	stars:drawGrid()
+
 	drawBasicShips()
 	drawWaypoints()
 
@@ -215,15 +227,28 @@ function love.draw()
 	camControl:cameraMovement()
 	camera:detach()
 
-	if x1 and y1 then
+	gui.draw()
+	--[[if x1 and y1 then
+		love.graphics.setColor(1,1,1)
 		love.graphics.line(x1, y1, love.mouse.getPosition())
-	end
+	end]]
 
 	if debug then
-		love.graphics.setColor(255, 255, 255)
+		love.graphics.setColor(1,1,1)
 		love.graphics.setFont(font)
 		fps = tostring(love.timer.getFPS())
-		love.graphics.print("Current FPS: "..fps, 9, 10)
+
+		local mx, my = love.mouse.getPosition()
+		local wmx, wmy = camera:worldCoords(mx, my)
+		love.graphics.print("Current FPS: "..fps.."\nScreen Position:"..mx.." "..my.."\nWorld Position: "..wmx.." "..wmy, 9, 10)
+
 		bodies = world:getBodies( )
+
+		local a, b = stars:mouseGridPosition()
+		local c, d = love.mouse.getPosition()
+		local e = stars:mouseGridLocation()
+		love.graphics.setFont(font)
+		love.graphics.print(a.." "..b.."\n"..e, c-35,d-35)
+		--love.graphics.points(camera:cameraCoords(a,b))
 	end
 end

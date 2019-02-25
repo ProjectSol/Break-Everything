@@ -28,9 +28,9 @@ function nav:drawGrid(shipX, shipY)
   local gridSize = 100
   local shipX = ship.body:getX()/2
   local shipY = ship.body:getY()/2
-  love.graphics.setColor(0.3,0.3,0.3)
   lg.setLineWidth(1)
   for i = 1,gridSize*gridSize do
+    love.graphics.setColor(0.3+0.3*(i%2),0.3+0.3*(i%2),0.3+0.3*(i%2))
     local a = math.floor((i-1)/gridSize)
     local c = math.floor(i-(a*gridSize))
     local drawX = (i - gridSize*a - 1)*sideLen + 3*c --+ shipX

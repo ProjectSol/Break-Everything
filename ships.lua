@@ -56,7 +56,7 @@ function ships:_init()
 
 
   self.x = 30+50*(self.id-1)
-  self.y = 300
+  self.y = 100
   self.shipVec = vector.new(self.x,self.y)
   self.waypoint = nil
   self.wpVec = nil
