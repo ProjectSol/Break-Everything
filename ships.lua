@@ -510,6 +510,7 @@ end
 function ships:installHardpoint(weaponry)
   table.insert(self.hardpoints, weaponry)
   print(weaponry.name.." added to "..self.name)
+  --print(self.hardpoints[1].damage)
 end
 
 

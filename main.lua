@@ -160,7 +160,7 @@ function love.keypressed( key, scancode, isrepeat )
 	end
 	if key == 'tab' then
 		--print("Now we should be changing ship")
-		shipselection:tabSwap()
+		shipSelection:tabSwap()
 	end
 
 	local err = tonumber(key)

@@ -22,6 +22,7 @@ function weaponry:_init()
   self.damage = 1
   self.healing = 0
   self.weapon = true
+  self.wType = laser --Projectile, Laser, Missle working on getting laser working first and we'll use it as a base line
 
   self.name = "unnamedWeaponry"
 
@@ -30,6 +31,7 @@ function weaponry:_init()
   self.heatOnFire = 7
   self.coolOff = 4
   self.maxRange = 500
+  self.minRange = 20
 end
 
 function weaponry:setName(name)
@@ -56,7 +58,7 @@ function weaponry:setDamage(num)
 end
 
 function hardpoints.giveBasicWeapons()
-  gun = weaponry.create()
+  local gun = weaponry.create()
   gun:setName('basicBlaster')
   weaponry.setDamage(gun, 15)
 
@@ -64,6 +66,24 @@ function hardpoints.giveBasicWeapons()
     local ship = shipsList[i]
     ship:installHardpoint(gun)
   end
+end
+
+function weaponry:fire(Allied, Neutral, Enemy)
+  local nearest, targetList = weaponry:checkRange()
+
+end
+
+function weaponry:checkRange()
+  local nearest, targetList
+  for i = 1,#shipsList do
+    local ship = shipsList[i]
+    local distance = math.sqrt((x2-x1)*2+(y2-y1)*2)
+    if distance <= self.maxRange() and distance >= self.minRange() then
+      print('Weaponry in range of '..ship.name)
+    end
+  end
+
+  return nearest, targetList
 end
 
 
