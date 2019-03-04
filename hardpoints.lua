@@ -25,6 +25,9 @@ function weaponry:_init()
   self.wType = laser --Projectile, Laser, Missle working on getting laser working first and we'll use it as a base line
 
   self.name = "unnamedWeaponry"
+  self.shipId = nil
+  --Update your id system to handle ships being deleted,
+  --added should just be fineTM
 
   self.fireRate = 1
   self.heatThreshold = 100
@@ -36,6 +39,10 @@ end
 
 function weaponry:setName(name)
   self.name = name
+end
+
+function weaponry:setID(ID)
+  self.id = ID
 end
 
 function weaponry:setHealing(num)
@@ -78,10 +85,20 @@ function weaponry:checkRange()
   --and calculate if they are close enough to be hit
   --based on their actual physical presence in the world
   local nearest, targetList
+  local parentShip = shipsList[self.id]
+  local x1,y1 = parentShip.body:getPosition()
+  if self.id ~= parentShip.id then
+    print("MAJOR ERROR: Weapon System ID referencing has broken and requires fixing, range check will be cancelled");
+    return -1
+  end
+
   for i = 1,#shipsList do
     local ship = shipsList[i]
-    local distance = math.sqrt((x2-x1)*2+(y2-y1)*2)
-    if distance <= self.maxRange() and distance >= self.minRange() then
+    local x2, y2 = ship.body:getPosition()
+    print(x1, y1, x2, y2)
+    local distance = (x1-x2)*2+(y1-y2)*2
+    print("Should be the distance: "..distance)
+    if distance <= self.maxRange and distance >= self.minRange then
       print('Weaponry in range of '..ship.name);
       table.insert(targetList)
       if distance <= nearest.distance then

@@ -1,13 +1,13 @@
 lg = love.graphics
 rasterizer = love.font.newRasterizer( "assets/Montserrat-Regular.ttf", 20 )
-titleText = love.graphics.newFont(rasterizer)
+titleText = lg.newFont(rasterizer)
 titleText:setFilter( 'nearest', 'nearest', 1 )
 rasterizer = love.font.newRasterizer( "assets/Montserrat-Regular.ttf", 8 )
-readingText = love.graphics.newFont(rasterizer)
+readingText = lg.newFont(rasterizer)
 readingText:setFilter( 'nearest', 'nearest', 1 )
 defaultFont = lg.newFont(20)
 
-font = love.graphics.newFont()
+font = lg.newFont()
 bypass = false
 
 function math.angle(x1,y1, x2,y2)
@@ -200,6 +200,13 @@ function mouseGrabToggle()
 	end
 end
 
+function errorPrint()
+	for i =1,#debugErrors do
+		lg.setFont(debugFont)
+		lg.print(debugErrors[i], 100, 100)
+	end
+end
+
 function closestToZero(a, b, c, d)
   local test = math.min(math.abs(a), math.abs(b), math.abs(c), math.abs(d))
   if math.abs(a) == test then
@@ -220,35 +227,37 @@ function love.draw()
 	drawBasicShips()
 	drawWaypoints()
 
-	love.graphics.setLineWidth(1)
+	lg.setLineWidth(1)
 
-	love.graphics.setColor(1,1,1)
+	lg.setColor(1,1,1)
 	local x,y = camera:worldCoords(love.mouse.getPosition())
 	camControl:cameraMovement()
 	camera:detach()
 
 	gui.draw()
 	--[[if x1 and y1 then
-		love.graphics.setColor(1,1,1)
-		love.graphics.line(x1, y1, love.mouse.getPosition())
+		lg.setColor(1,1,1)
+		lg.line(x1, y1, love.mouse.getPosition())
 	end]]
 
+	errorPrint()
+
 	if debug then
-		love.graphics.setColor(1,1,1)
-		love.graphics.setFont(font)
+		lg.setColor(1,1,1)
+		lg.setFont(font)
 		fps = tostring(love.timer.getFPS())
 
 		local mx, my = love.mouse.getPosition()
 		local wmx, wmy = camera:worldCoords(mx, my)
-		love.graphics.print("Current FPS: "..fps.."\nScreen Position:"..mx.." "..my.."\nWorld Position: "..wmx.." "..wmy, 9, 10)
+		lg.print("Current FPS: "..fps.."\nScreen Position:"..mx.." "..my.."\nWorld Position: "..wmx.." "..wmy, 9, 10)
 
 		bodies = world:getBodies( )
 
 		local a, b = stars:mouseGridPosition()
 		local c, d = love.mouse.getPosition()
 		local e = stars:mouseGridLocation()
-		love.graphics.setFont(font)
-		love.graphics.print(a.." "..b.."\n"..e, c-35,d-35)
-		--love.graphics.points(camera:cameraCoords(a,b))
+		lg.setFont(font)
+		lg.print(a.." "..b.."\n"..e, c-35,d-35)
+		--lg.points(camera:cameraCoords(a,b))
 	end
 end
