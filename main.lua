@@ -6,6 +6,8 @@ rasterizer = love.font.newRasterizer( "assets/Montserrat-Regular.ttf", 8 )
 readingText = lg.newFont(rasterizer)
 readingText:setFilter( 'nearest', 'nearest', 1 )
 defaultFont = lg.newFont(20)
+rasterizer = love.font.newRasterizer( "assets/Montserrat-Regular.ttf", 30 )
+debugFont = lg.newFont(rasterizer)
 
 font = lg.newFont()
 bypass = false
@@ -201,9 +203,12 @@ function mouseGrabToggle()
 end
 
 function errorPrint()
-	for i =1,#debugErrors do
-		lg.setFont(debugFont)
-		lg.print(debugErrors[i], 100, 100)
+	if debugErrors then
+		love.graphics.setColor(1,1,1)
+		for i =1,#debugErrors do
+			lg.setFont(debugFont)
+			lg.print(debugErrors[i], 100, 100)
+		end
 	end
 end
 

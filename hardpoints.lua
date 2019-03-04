@@ -64,10 +64,24 @@ function weaponry:setDamage(num)
 
 end
 
+function weaponry:setRange(max, min)
+  print("Setting maximum range as "..max)
+  print("Setting minimum range as "..min)
+
+  if max <= 0 or min < 0 then
+    print("You can't have a maximum range of zero or a minimum below zero, cancelling setRange")
+  else
+    self.maxRange = max
+    self.minRange = min
+  end
+
+end
+
 function hardpoints.giveBasicWeapons()
   local gun = weaponry.create()
   gun:setName('basicBlaster')
   weaponry.setDamage(gun, 15)
+  weaponry.setRange(gun, 500, 40)
 
   for i = 1,#shipsList do
     local ship = shipsList[i]
@@ -80,29 +94,40 @@ function weaponry:fire(Allied, Neutral, Enemy)
 
 end
 
-function weaponry:checkRange()
+function weaponry:checkRange(alliance)
   --You need to update this function to reference the shape of each ship
   --and calculate if they are close enough to be hit
   --based on their actual physical presence in the world
-  local nearest, targetList
+  local nearest = {}
+  local targetList = {}
   local parentShip = shipsList[self.id]
   local x1,y1 = parentShip.body:getPosition()
   if self.id ~= parentShip.id then
     print("MAJOR ERROR: Weapon System ID referencing has broken and requires fixing, range check will be cancelled");
-    return -1
+    return -1, -1
   end
 
   for i = 1,#shipsList do
     local ship = shipsList[i]
-    local x2, y2 = ship.body:getPosition()
-    print(x1, y1, x2, y2)
-    local distance = (x1-x2)*2+(y1-y2)*2
-    print("Should be the distance: "..distance)
-    if distance <= self.maxRange and distance >= self.minRange then
-      print('Weaponry in range of '..ship.name);
-      table.insert(targetList)
-      if distance <= nearest.distance then
-        table.insert(nearest)
+    if ship.id ~= self.id then
+      if ship.alliance == alliance then
+        local x2, y2 = ship.body:getPosition()
+        --print(x1, y1, x2, y2)
+        local distance = (x1-x2)^2+(y1-y2)^2
+        --[[print("Should be the distance: "..distance)
+        print(self.maxRange)
+        print(self.minRange)]]
+        if distance <= self.maxRange and distance >= self.minRange then
+          --print('Weaponry in range of '..ship.name);
+          table.insert(targetList, ship.id)
+          for i = 1,#nearest do
+            if distance <= nearest.distance then
+              nearest = {id = ship.id, distance = distance}
+            end
+          end
+          --print("assigning nearest for the first time")
+          nearest = {id = ship.id, distance = distance}
+        end
       end
     end
   end

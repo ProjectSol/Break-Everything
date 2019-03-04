@@ -471,21 +471,24 @@ end
 
 function ships:checkRangeofWeapons()
   self.nearestInRange, self.targetList = {}
+  --print("size of hardpoint table:"..#self.hardpoints)
   for i = 1,#self.hardpoints do
+    local hardpoint = self.hardpoints[i]
+    --print("Running check range for: "..self.name.." ID "..self.id.." "..hardpoint.name)
     self.nearestInRange, self.targetList = self.hardpoints[i]:checkRange()
     if nearestInRange == -1 then
-      local error = "ID system is misreferencing ships for the hardpoints system"
+      local error = "ID system is misreferencing ships \nfor the hardpoints system"
+      debugErrors = {}
       table.insert(debugErrors, error)
     end
   end
-  self.nearest = ships:calculateNearest()
-  print("ran CalculateNearest "..self.nearest())
+  --self.nearest = ships:calculateNearest()
+  --print("ran CalculateNearest "..self.nearest())
 end
 
 function shipsThink()
   for i = 1,#shipsList do
     local ship = shipsList[i]
-
     ship:checkRangeofWeapons()
 
     ship.x = ship.body:getX()
