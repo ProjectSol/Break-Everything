@@ -76,6 +76,11 @@ function ships:_init()
   self.resetting = true
   self.targeting = nil
 
+
+  self.targetList = {}
+  self.nearest = {}
+  self.nearestInRange = {ship = nil, hardpoints = {}}
+
 end
 
 function ships:getShipPos()
@@ -464,15 +469,26 @@ function drawWaypoints()
   end
 end
 
+function ships:checkRangeofWeapons()
+  self.nearestInRange, self.targetList = {}
+  for i = 1,#self.hardpoints do
+    self.nearestInRange, self.targetList = self.hardpoints[i]:checkRange()
+  end
+  self.nearest = ships:calculateNearest()
+end
+
 function shipsThink()
   for i = 1,#shipsList do
     local ship = shipsList[i]
+
+    ship:checkRangeofWeapons()
 
     ship.x = ship.body:getX()
     ship.y = ship.body:getY()
     ship.shipVec = vector.new(ship.x, ship.y)
 
     if usingMovement2 then
+      --Still need to untie movement from the framerate
       movement:rotate2(ship)
       movement:movement2(ship)
     else

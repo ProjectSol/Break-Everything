@@ -74,12 +74,19 @@ function weaponry:fire(Allied, Neutral, Enemy)
 end
 
 function weaponry:checkRange()
+  --You need to update this function to reference the shape of each ship
+  --and calculate if they are close enough to be hit
+  --based on their actual physical presence in the world
   local nearest, targetList
   for i = 1,#shipsList do
     local ship = shipsList[i]
     local distance = math.sqrt((x2-x1)*2+(y2-y1)*2)
     if distance <= self.maxRange() and distance >= self.minRange() then
-      print('Weaponry in range of '..ship.name)
+      print('Weaponry in range of '..ship.name);
+      table.insert(targetList)
+      if distance <= nearest.distance then
+        table.insert(nearest)
+      end
     end
   end
 
