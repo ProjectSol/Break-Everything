@@ -2,7 +2,7 @@ stars = {};
 
 starGridSize = 3;
 starGridLength = 2000;
-numStars = 450;
+numStars = 650;
 displayStarGridTiles = false;
 
 function stars:debugGrid()
@@ -42,11 +42,15 @@ function stars:drawGrid()
     end
   end
 
-  local shipX, shipY = ship.body:getPosition();
+  --local shipX, shipY = ship.body:getPosition();
+  local cameraX, cameraY = camera:position();
+  local usedX = cameraX;
+  local usedY = cameraY;
+  
   for i = -1,1 do
     for j = -1,1 do
-      local gridLoc = stars:getGridLocation(shipX+i*starGridLength, shipY+j*starGridLength);
-      local centreTileX, centreTileY = stars:getClosestLocForGrid(shipX+i*starGridLength, shipY+j*starGridLength);
+      local gridLoc = stars:getGridLocation(usedX+i*starGridLength, usedY+j*starGridLength);
+      local centreTileX, centreTileY = stars:getClosestLocForGrid(usedX+i*starGridLength, usedY+j*starGridLength);
       starGrid[gridLoc].x = centreTileX
       starGrid[gridLoc].y = centreTileY
 
@@ -56,6 +60,7 @@ function stars:drawGrid()
       end
 
       local stars = starGrid[gridLoc].stars
+
       for k = 1,#stars do
         --print(unpack(stars[k].colour))
         love.graphics.setColor(unpack(stars[k].colour))

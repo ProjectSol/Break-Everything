@@ -22,7 +22,7 @@ function weaponry:_init()
   self.damage = 1
   self.healing = 0
   self.weapon = true
-  self.wType = laser --Projectile, Laser, Missle working on getting laser working first and we'll use it as a base line
+  self.weaponType = laser --Projectile, Laser, Missle working on getting laser working first and we'll use it as a base line
 
   self.name = "unnamedWeaponry"
   self.shipId = nil
@@ -89,9 +89,42 @@ function hardpoints.giveBasicWeapons()
   end
 end
 
-function weaponry:fire(Allied, Neutral, Enemy)
-  local nearest, targetList = weaponry:checkRange()
+function weaponry:fire(enemyId)
+  --local nearest, targetList = weaponry:checkRange()
+  local enemyShip = shipsList[enemyId]
+  local firingShip = shipsList[self.id]
+  love.graphics.print("wawawawawawwa", firingShip.body:getPosition())
+  if self.weaponType == laser then
+    love.graphics.print("wawawawawawwa", firingShip.body:getPosition())
+  end
+end
 
+function weaponry:runFire(Allied, Neutral, Enemy, legalTargets)
+  if legalTargets == 'Hold' then
+
+  elseif legalTargets == 'Indiscriminate' then
+    for i = 1,#targetList do
+      for k = 1,#Neutral do
+        if targetList.alliance == Neutral[k] then
+
+          self:fire(targetList.id)
+        end
+      end
+      for k = 1,#Enemy do
+        if targetList.alliance == Enemy[k] then
+
+          self:fire(targetList.id)
+        end
+      end
+    end
+  elseif legalTargets == 'Enemy' then
+    for k = 1,#Enemy do
+      if targetList.alliance == Enemy[k] then
+
+        self:fire(targetList.id)
+      end
+    end
+  end
 end
 
 function weaponry:checkRange(alliance)

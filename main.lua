@@ -130,15 +130,16 @@ function loadFiles( dir )
 end
 
 function love.update(dt)
+	gui.update()
+
 	if not paused then
 		world:update(dt)
-		gui.update()
-
 		shipsThink()
-		for i = 1,2 do
-			if love.mouse.isDown(i) and shipsMouseRunBool then
-				shipsThinkMouse(i)
-			end
+	end
+
+	for i = 1,2 do
+		if love.mouse.isDown(i) and shipsMouseRunBool then
+			shipsThinkMouse(i)
 		end
 	end
 end
@@ -158,7 +159,7 @@ function love.keypressed( key, scancode, isrepeat )
 		end
 	end
 	if key == 'y' and shipBuilder:getSelectedPlayerShip() then
-		camControl:flickerLockSetting()
+		camControl:swapLockSetting()
 	end
 	if key == 'tab' then
 		--print("Now we should be changing ship")

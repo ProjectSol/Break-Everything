@@ -475,7 +475,7 @@ function ships:checkRangeofWeapons()
   for i = 1,#self.hardpoints do
     local hardpoint = self.hardpoints[i]
     --print("Running check range for: "..self.name.." ID "..self.id.." "..hardpoint.name)
-    self.nearestInRange, self.targetList = self.hardpoints[i]:checkRange()
+    self.nearestInRange, self.targetList = self.hardpoints[i]:checkRange(self.alliance)
     if nearestInRange == -1 then
       local error = "ID system is misreferencing ships \nfor the hardpoints system"
       debugErrors = {}
@@ -490,7 +490,8 @@ function shipsThink()
   for i = 1,#shipsList do
     local ship = shipsList[i]
     ship:checkRangeofWeapons()
-
+    ship.hardpoints[1]:fire()
+    
     ship.x = ship.body:getX()
     ship.y = ship.body:getY()
     ship.shipVec = vector.new(ship.x, ship.y)

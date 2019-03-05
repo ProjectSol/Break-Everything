@@ -4,7 +4,7 @@ camControl = {}
 
 cameraLock = false
 
-function camControl:flickerLockSetting()
+function camControl:swapLockSetting()
   if cameraLock == true then
     camControl:setCameraLock(false)
   else
