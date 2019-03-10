@@ -59,6 +59,9 @@ function love.load()
 	world = love.physics.newWorld(0, 0, true)
 	love.mouse.setGrabbed(true)
 
+	--Hey idiot fix this at some point right, migrate everything to referencing the table and make these vars locals
+	--This line is here to help attract attention, have a nice day
+
 	Turquoise = {26/255,188/255,156/255} Blue = {41/255,128/255,185/255}
 	Emerald = {241/255,196/255,15/255} Purple = {142/255,68/255,173/255}
 	Asphalt = {56/255,75/255,97/255} Yellow = {241/255,196/255,15/255}
@@ -67,6 +70,35 @@ function love.load()
 	Green = {34/255,139/255,34/255} Brown = {139/255,90/255,0}
 	Sepia = {94/255,38/255,18/255} UnknownShip = {189/255,195/255,199/255}
 	Default = {1,1,1}
+
+	colTab = {}
+	table.insert(colTab, Turquoise)
+	table.insert(colTab, Blue)
+	table.insert(colTab, Emerald)
+	table.insert(colTab, Purple)
+	table.insert(colTab, Asphalt)
+	table.insert(colTab, Yellow)
+	table.insert(colTab, Pumpkin)
+	table.insert(colTab, Red)
+	table.insert(colTab, Wheat)
+	table.insert(colTab, Pink)
+	table.insert(colTab, Green)
+	table.insert(colTab, Brown)
+	table.insert(colTab, Sepia)
+	table.insert(colTab, UnkownShip)
+	table.insert(colTab, Default)
+
+
+	--[[colTab2 = {	Turquoise = {26/255,188/255,156/255}, Blue = {41/255,128/255,185/255},
+							Emerald = {241/255,196/255,15/255}, Purple = {142/255,68/255,173/255},
+							Asphalt = {56/255,75/255,97/255}, Yellow = {241/255,196/255,15/255},
+							Pumpkin = {211/255,84/255,0}, Red = {232/255,77/255,63/255},
+							Wheat = {139/255,126/255,102/255}, Pink = {1,0,1},
+							Green = {34/255,139/255,34/255}, Brown = {139/255,90/255,0},
+							Sepia = {94/255,38/255,18/255}, UnknownShip = {189/255,195/255,199/255},
+							Default = {1,1,1}
+					 }]]
+
 
 	starCols = {	{1, 229/255, 229/255}, {222/255, 246/255, 1},
 								{222/255, 1, 228/255}, {249/255, 241/255, 222/255},
@@ -86,9 +118,11 @@ function love.load()
 	stars:generateGrid()
 
 	--basicWalls()
-	allianceSys:newAlliance("Unaligned", UnknownShip)
-	allianceSys:newAlliance("Pirates", Red)
-	--allianceSys:newAlliance("SuperHappyFunLand", Purple)
+	allianceSys:newAlliance("Unaligned", UnknownShip, "Unaligned")
+	allianceSys:newAlliance("Mantenian Empire", Wheat, "Government")
+	allianceSys:newAlliance("Renwight's Raiders", Red, "Piracy")
+	allianceSys:newAlliance("SuperHappyFunLand", Purple, "Piracy")
+	allianceSys:newAlliance("Gogol Corp", Sepia, "Traders")
 	for i = 1,1 do
 		shipBuilder:genLeviathanPlayerShip()
 		shipBuilder:genGoliathPlayerShip()
@@ -144,12 +178,18 @@ function love.update(dt)
 	end
 end
 
+function returnColour(id)
+	print("R: "..colTab[id][1].." G: "..colTab[id][2].." B: "..colTab[id][3])
+	return colTab[id][1], colTab[id][2], colTab[id][3]
+end
+
 function love.keypressed( key, scancode, isrepeat )
 	if key == 'escape' then
 		love.event.push('quit')
 	end
 	if key == 'space' then
 		systems:pause()
+		returnColour(1)
 	end
 	if key == 'p' then
 		if usingMovement2 then

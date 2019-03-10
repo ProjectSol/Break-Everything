@@ -46,7 +46,7 @@ function stars:drawGrid()
   local cameraX, cameraY = camera:position();
   local usedX = cameraX;
   local usedY = cameraY;
-  
+
   for i = -1,1 do
     for j = -1,1 do
       local gridLoc = stars:getGridLocation(usedX+i*starGridLength, usedY+j*starGridLength);

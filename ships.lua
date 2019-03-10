@@ -79,7 +79,7 @@ function ships:_init()
 
   self.targetList = {}
   self.nearest = {}
-  self.nearestInRange = {ship = nil, hardpoints = {}}
+  self.nearestInRange = {}
 
 end
 
@@ -88,6 +88,7 @@ function ships:getShipPos()
 end
 
 function placeNPCWP(NPCShip)
+  --The worst possible ai I could write, lets get this bread team
   local targets = {}
   for i = 1,#shipsList do
     local ship = shipsList[i]
@@ -281,7 +282,7 @@ function ships:pirateInit()
   self.behaviour = behave.EnemyPreset1
   self.player = false
   self.speedPercent = 1
-  self.alliance = alliances:getAlliance("Pirates")
+  self.alliance = alliances:getAlliance("Renwight's Raiders")
 end
 
 function shipBuilder:genLeviathanPlayerShip()
@@ -490,8 +491,12 @@ function shipsThink()
   for i = 1,#shipsList do
     local ship = shipsList[i]
     ship:checkRangeofWeapons()
-    ship.hardpoints[1]:fire()
-    
+    --[[if ship.targetList and ship.hardpoints then
+      for i = 1,#ships.hardpoints do
+        ship.hardpoints[i]:runFire()
+      end
+    end]]
+
     ship.x = ship.body:getX()
     ship.y = ship.body:getY()
     ship.shipVec = vector.new(ship.x, ship.y)

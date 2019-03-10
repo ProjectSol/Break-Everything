@@ -105,13 +105,13 @@ function weaponry:runFire(Allied, Neutral, Enemy, legalTargets)
   elseif legalTargets == 'Indiscriminate' then
     for i = 1,#targetList do
       for k = 1,#Neutral do
-        if targetList.alliance == Neutral[k] then
+        if targetList[i].alliance == Neutral[k] then
 
           self:fire(targetList.id)
         end
       end
       for k = 1,#Enemy do
-        if targetList.alliance == Enemy[k] then
+        if targetList[i].alliance == Enemy[k] then
 
           self:fire(targetList.id)
         end
@@ -119,7 +119,7 @@ function weaponry:runFire(Allied, Neutral, Enemy, legalTargets)
     end
   elseif legalTargets == 'Enemy' then
     for k = 1,#Enemy do
-      if targetList.alliance == Enemy[k] then
+      if targetList[i].alliance == Enemy[k] then
 
         self:fire(targetList.id)
       end
