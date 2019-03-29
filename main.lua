@@ -143,6 +143,8 @@ function love.load()
 
 	UI:basicUI()
 	UI:movementElements()
+
+	lasTable = {}
 end
 
 function loadFiles( dir )
@@ -272,6 +274,7 @@ function love.draw()
 
 	drawBasicShips()
 	drawWaypoints()
+	drawLas()
 
 	lg.setLineWidth(1)
 

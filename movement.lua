@@ -2,9 +2,9 @@ movement = {}
 
 function movement:movement(ship)
 	--Deprecated, see movement2
+	ship.currSpeed = movement:calcCurrSpeed(ship)
 	if ship.validWaypoint and ship.accel then
 		local angle = ship.body:getAngle() + math.pi/2
-		ship.currSpeed = movement:calcCurrSpeed(ship)
 		local playerDx = 10 * ship.currSpeed * math.cos(angle)
 		local playerDy = 10 * ship.currSpeed * math.sin(angle)
 

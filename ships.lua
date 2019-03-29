@@ -217,7 +217,7 @@ classes.largeClass = {-30, -30, 30, -30, 0, 30}
 classes.hugeClass = {-55, -55, 55, -55, 0, 55}
 
 function ships:setTargeting()
-
+  --So many functions we have to make my god.
 end
 
 function ships:playerShipInit()
@@ -477,6 +477,9 @@ function ships:checkRangeofWeapons()
     local hardpoint = self.hardpoints[i]
     --print("Running check range for: "..self.name.." ID "..self.id.." "..hardpoint.name)
     self.nearestInRange, self.targetList = self.hardpoints[i]:checkRange(self.alliance)
+    if self.targetList[1] then
+      --print(shipsList[self.targetList[1]].name)
+    end
     if nearestInRange == -1 then
       local error = "ID system is misreferencing ships \nfor the hardpoints system"
       debugErrors = {}
@@ -490,12 +493,17 @@ end
 function shipsThink()
   for i = 1,#shipsList do
     local ship = shipsList[i]
-    ship:checkRangeofWeapons()
-    --[[if ship.targetList and ship.hardpoints then
-      for i = 1,#ships.hardpoints do
-        ship.hardpoints[i]:runFire()
+      --print('Name of the ship is: '..ship.name.." We're allowed to fire but we'll do it anyway without this requirement")
+      ship:checkRangeofWeapons()
+      if #ship.targetList then
+        for k = 1,#ship.hardpoints do
+          --print('\n'..k..' of '..i..'\n')
+        --print("do a shoot")
+        --targetList, Allied, Neutral, Enemy, 'Enemy / Indiscriminate / Hold'
+          ship.hardpoints[k]:runFire(ship.targetList, {}, {alliances:getAlliance("Unaligned")}, {alliances:getAlliance("Renwight's Raiders")}, 'Indiscriminate')
+        end
       end
-    end]]
+
 
     ship.x = ship.body:getX()
     ship.y = ship.body:getY()
@@ -503,11 +511,15 @@ function shipsThink()
 
     if usingMovement2 then
       --Still need to untie movement from the framerate
-      movement:rotate2(ship)
-      movement:movement2(ship)
+      --if ship.alliance ~= alliances:getAlliance("Renwight's Raiders") then
+        movement:rotate2(ship)
+        movement:movement2(ship)
+      --end
     else
-      movement:rotate(ship)
-      movement:movement(ship)
+      --if ship.alliance ~= alliances:getAlliance("Renwight's Raiders") then
+        movement:rotate(ship)
+        movement:movement(ship)
+      --end
     end
 
     ship:behave()
@@ -529,7 +541,7 @@ function shipsThinkMouse(button)
     placeWaypoint()
   elseif button == 1 then
     --bandBoxSelection()
-    shipSelection:clickSetTarget()
+    --shipSelection:clickSetTarget()
   end
   for i = 1,#shipsList do
     local ship = shipsList[i]
@@ -538,9 +550,12 @@ function shipsThinkMouse(button)
 end
 
 function ships:installHardpoint(weaponry)
-  weaponry:setID(self.id)
+  print('Inital num hardpoints on '..self.name..': '..#self.hardpoints)
   table.insert(self.hardpoints, weaponry)
-  print(weaponry.name.." added to "..self.name.."\nship ID: "..self.id.." weapon ship ID: "..weaponry.id)
+  self.hardpoints[#self.hardpoints]:setID(#self.hardpoints)
+  self.hardpoints[#self.hardpoints]:setShipID(self.id)
+  print('End num hardpoints on '..self.name..': '..#self.hardpoints)
+  print(self.hardpoints[#self.hardpoints].name.." added to "..self.name.."\nship ID: "..self.id.." weapon ID: "..self.hardpoints[#self.hardpoints].id.."ship ID: "..self.hardpoints[#self.hardpoints].shipID)
   --print(self.hardpoints[1].damage)
 end
 

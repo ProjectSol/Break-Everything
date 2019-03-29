@@ -1,6 +1,5 @@
 hardpoints = {}
 
-
 weaponry = {}
 weaponry_mt = {__index = weaponry}
 
@@ -25,7 +24,8 @@ function weaponry:_init()
   self.weaponType = laser --Projectile, Laser, Missle working on getting laser working first and we'll use it as a base line
 
   self.name = "unnamedWeaponry"
-  self.shipId = nil
+  self.id = nil
+  self.shipID = nil
   --Update your id system to handle ships being deleted,
   --added should just be fineTM
 
@@ -33,7 +33,7 @@ function weaponry:_init()
   self.heatThreshold = 100
   self.heatOnFire = 7
   self.coolOff = 4
-  self.maxRange = 500
+  self.maxRange = 100
   self.minRange = 20
 end
 
@@ -43,6 +43,10 @@ end
 
 function weaponry:setID(ID)
   self.id = ID
+end
+
+function weaponry:setShipID(ID)
+  self.shipID = ID
 end
 
 function weaponry:setHealing(num)
@@ -77,14 +81,21 @@ function weaponry:setRange(max, min)
 
 end
 
-function hardpoints.giveBasicWeapons()
-  local gun = weaponry.create()
-  gun:setName('basicBlaster')
-  weaponry.setDamage(gun, 15)
-  weaponry.setRange(gun, 500, 40)
+function weaponry:getParentShipID()
+  return self.shipID
+end
 
+function hardpoints.giveBasicWeapons()
   for i = 1,#shipsList do
     local ship = shipsList[i]
+
+    local gun = weaponry.create()
+    gun:setName('basicBlaster')
+    gun:setDamage(15)
+    gun:setRange(500, 20)
+    gun:setID(#ship.hardpoints+1)
+    gun:setShipID(i)
+
     ship:installHardpoint(gun)
   end
 end
@@ -92,36 +103,54 @@ end
 function weaponry:fire(enemyId)
   --local nearest, targetList = weaponry:checkRange()
   local enemyShip = shipsList[enemyId]
-  local firingShip = shipsList[self.id]
-  love.graphics.print("wawawawawawwa", firingShip.body:getPosition())
-  if self.weaponType == laser then
-    love.graphics.print("wawawawawawwa", firingShip.body:getPosition())
-  end
+  local firingShip = shipsList[self.shipID]
+  --print("Hello?")
+  --love.graphics.print("wawawawawawwa", firingShip.body:getPosition())
+  --if self.weaponType == laser then
+    --love.graphics.print("wawawawawawwa", firingShip.body:getPosition())
+    local x1,y1 = firingShip.body:getPosition()
+    local x2,y2 = enemyShip.body:getPosition()
+    local newLaser = {x1 = x1, y1 = y1, x2 = x2, y2 = y2, colour = firingShip.alliance.colour, attackerId = self.shipID, defenderId = enemyId}
+    table.insert(lasTable, newLaser)
+    -- /print(#lasTable)
+  --end
 end
 
-function weaponry:runFire(Allied, Neutral, Enemy, legalTargets)
+function weaponry:runFire(targetList, Allied, Neutral, Enemy, legalTargets)
+  --local parentShipID = self:getParentShipID()
+  --print(shipsList[parentShipID].id, parentShipID, 'inside print')
   if legalTargets == 'Hold' then
-
+    print('Holding fire')
   elseif legalTargets == 'Indiscriminate' then
     for i = 1,#targetList do
+      local alliance = shipsList[targetList[i]].alliance
       for k = 1,#Neutral do
-        if targetList[i].alliance == Neutral[k] then
 
-          self:fire(targetList.id)
+        if alliance == Neutral[k] and alliance ~= nil then
+          --print(self.name.."Installed on: "..shipsList[parentShipID].name.."\nFiring at neutral ship: "..shipsList[targetList[i].name])
+
+          self:fire(targetList[i])
         end
       end
       for k = 1,#Enemy do
-        if targetList[i].alliance == Enemy[k] then
-
-          self:fire(targetList.id)
+        if alliance == Enemy[k] and alliance ~= nil then
+          --print("Hardpoint Installed on: "..shipsList[self:getParentShipID()].name.."\nFiring at enemy ship: "..shipsList[targetList[i].name])
+          self:fire(targetList[i])
         end
       end
     end
   elseif legalTargets == 'Enemy' then
-    for k = 1,#Enemy do
-      if targetList[i].alliance == Enemy[k] then
-
-        self:fire(targetList.id)
+    for i = 1,#targetList do
+      --print('one: '..#targetList)
+      local alliance = shipsList[targetList[i]].alliance
+      for k = 1,#Enemy do
+        --print('two: '..#Enemy)
+        --print(alliance:getName())
+        if alliance == Enemy[k] and alliance ~= nil then
+          --print("Hey look we're shooting at: "..shipsList[targetList[i]].name)
+          --print(self.name.."Installed on: "..shipsList[self.getParentShipID()].name.."\nFiring at enemy ship: "..shipsList[targetList[i].name])
+          self:fire(targetList[i])
+        end
       end
     end
   end
@@ -133,20 +162,22 @@ function weaponry:checkRange(alliance)
   --based on their actual physical presence in the world
   local nearest = {}
   local targetList = {}
-  local parentShip = shipsList[self.id]
+  local parentShip = shipsList[self.shipID]
   local x1,y1 = parentShip.body:getPosition()
-  if self.id ~= parentShip.id then
+  if self.shipID ~= parentShip.id then
     print("MAJOR ERROR: Weapon System ID referencing has broken and requires fixing, range check will be cancelled");
     return -1, -1
   end
 
   for i = 1,#shipsList do
     local ship = shipsList[i]
-    if ship.id ~= self.id then
-      if ship.alliance == alliance then
+    if ship.id ~= self.shipID then
+      --if ship.alliance == alliance then
+
+      --else
         local x2, y2 = ship.body:getPosition()
         --print(x1, y1, x2, y2)
-        local distance = (x1-x2)^2+(y1-y2)^2
+        local distance = math.sqrt((x1-x2)^2+(y1-y2)^2)
         --[[print("Should be the distance: "..distance)
         print(self.maxRange)
         print(self.minRange)]]
@@ -161,13 +192,32 @@ function weaponry:checkRange(alliance)
           --print("assigning nearest for the first time")
           nearest = {id = ship.id, distance = distance}
         end
+        --[[for i = 1,#targetList do
+          print('Entry '..i..' in targetList is the id of the ship: '..shipsList[targetList[i]]--[[.name)
+        end]]
       end
     end
-  end
 
   return nearest, targetList
 end
 
+function drawLas()
+  --print(#lasTable)
+  for i = 1,#lasTable do
+    lg.setColor(unpack(lasTable[i].colour))
+    lg.setLineWidth(1)
+    --print(i)
+    local x1 = lasTable[i].x1
+    local x2 = lasTable[i].x2
+    local y1 = lasTable[i].y1
+    local y2 = lasTable[i].y2
 
+    love.graphics.line(x1, y1, x2, y2)
+    love.graphics.print(""..lasTable[i].attackerId, x2+10*lasTable[i].attackerId,y2)
+  end
+  --[[if #lasTable > 10 then
+    lasTable = {}
+  end]]
+end
 
 return hardpoints
