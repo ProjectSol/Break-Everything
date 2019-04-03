@@ -33,13 +33,18 @@ function alliances:_init()
 end
 
 function alliances:setName(name)
+  local setName = false
   for i = 1,#alliList do
+    --print(name, alliList[i].name)
     if alliList[i].name == name then
       local error = "Invalid Name: Name Already Taken by Other Alliance"
       return error
     else
-      self.name = name
+      setName = true
     end
+  end
+  if setName then
+    self.name = name
   end
   return self.name
 end
@@ -83,6 +88,7 @@ function alliances:getAlliance(name)
 end
 
 function alliances:setBaseOpinion()
+  self.opinions = {}
   print("Running setBaseOpinion for new alliance")
   --So setting how much they like the player and iterating through all the existing alliances to see how they like each other
   for i = 1,#alliList do
@@ -114,13 +120,23 @@ function alliances:setBaseOpinion()
       table.insert(self.opinions, opinionTable)
     elseif otherAlliance.id ~= self.id then
       if otherAlliance.class == self.class then
-        bonus = {desc = "We have some appreciable similarities", mod = 10}
-        table.insert(opinionTable.bonus, bonus)
-        for k = 1,#opinionTable.bonus do
-          print(k..": "..opinionTable.bonus[k].mod.." is the modifier of the opinion "..opinionTable.bonus[k].desc)
+        if self.class == "Piracy" then
+          bonus = {desc = "We have some appreciable similarities", mod = 10}
+          table.insert(opinionTable.bonus, bonus)
+          for k = 1,#opinionTable.bonus do
+            print(k..": "..opinionTable.bonus[k].mod.." is the modifier of the opinion "..opinionTable.bonus[k].desc)
+          end
+          print(self.opinions, opinionTable)
+          table.insert(self.opinions, opinionTable)
+        else
+          bonus = {desc = "We have some appreciable similarities", mod = 10}
+          table.insert(opinionTable.bonus, bonus)
+          for k = 1,#opinionTable.bonus do
+            print(k..": "..opinionTable.bonus[k].mod.." is the modifier of the opinion "..opinionTable.bonus[k].desc)
+          end
+          print(self.opinions, opinionTable)
+          table.insert(self.opinions, opinionTable)
         end
-        print(self.opinions, opinionTable)
-        table.insert(self.opinions, opinionTable)
 
 
       elseif otherAlliance.class == "Piracy" then
@@ -135,6 +151,8 @@ function alliances:setBaseOpinion()
         print("There is no opinion change here")
         --Doing nothing as no opinion is changing
       end
+    else
+      print("This alliance has no need to set an opinion for itself")
     end
   end
   return "no errors encountered"
@@ -203,17 +221,21 @@ function alliances:changeOpinions(targetAllianceId, opinionShift)
 end
 
 function allianceSys:newAlliance(name, colour, class)
-  local ally = alliances.create()
+  local ally = alliances:create()
+  --print("ally name pre setup "..ally.name)
   table.insert(alliList, ally)
   --print(alliList[#alliList].name)
   local alli = alliList[#alliList]
   print(alli:setID(#alliList))
-  print("Alliance ID: "..alli.id)
   print(alli:setName(name))
+  print("Alliance ID for "..alli.name..": "..alli.id)
   print(alli:setColour(colour))
   print(alli:setClass(class))
   print(alli:setBaseOpinion())
 end
+
+
+
 
 
 return alliances
