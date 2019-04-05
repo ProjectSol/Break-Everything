@@ -27,6 +27,7 @@ function alliances:_init()
   self.class = "undefined"
   self.behaviour = nil
   self.colour = Default
+  self.atWar = {}
   self.opinions = {}
   --self.opinionModifiers = {}
   --self:setBaseOpinion()
@@ -84,6 +85,39 @@ function alliances:getAlliance(name)
       alliance = alliList[i]
       return alliance
     end
+  end
+end
+
+function alliance:getAtWar(targetID)
+  for i = 1,#self.atWar do
+    if targetID == self.atWar[i].id then
+      if status == 'War' then
+        return true
+      else
+        return false
+      end
+    end
+  end
+end
+
+function alliances:declareWar(targetID)
+  local targetAlliance = alliList[targetID]
+  local target = {id = targetAlliance:getID(), status = 'War'}
+
+  table.insert(self.atWar, target)
+end
+
+function alliances:requestCeasefire(targetID)
+  local numToRemove = nil
+  for i = 1,#self.atWar do
+    if targetID == self.atWar[i].id then
+      --You'll need to update this later to actually query if the other alliance wants a cease fire
+      numToRemove = i
+      break
+    end
+  end
+  if numToRemove ~= nil then
+    table.remove(self.atWar, i)
   end
 end
 
@@ -184,7 +218,7 @@ function alliances:returnNeutral(targetAllianceId)
   local atWar
   for i = 1,#targetAlliance.atWar do
     if targetAlliance.atWar[i].id == self.id then
-      atWar = targetAlliance.atWar[i]
+      atWar = targetAlliance.atWar[i].status
     end
   end
   local opinion = 0

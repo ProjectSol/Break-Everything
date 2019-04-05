@@ -215,9 +215,9 @@ function drawLas()
     love.graphics.line(x1, y1, x2, y2)
     love.graphics.print(""..lasTable[i].attackerId, x2+10*lasTable[i].attackerId,y2)
   end
-  --[[if #lasTable > 10 then
+  if #lasTable > 10 then
     lasTable = {}
-  end]]
+  end
 end
 
 return hardpoints
