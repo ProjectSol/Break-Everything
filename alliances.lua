@@ -63,6 +63,7 @@ function alliances:getID()
   return self.id
 end
 
+--Government, MegaCorp, Piracy, Unaligned
 function alliances:setClass(class)
   self.class = class
   return self.class
@@ -88,7 +89,7 @@ function alliances:getAlliance(name)
   end
 end
 
-function alliance:getAtWar(targetID)
+function alliances:getAtWar(targetID)
   for i = 1,#self.atWar do
     if targetID == self.atWar[i].id then
       if status == 'War' then
@@ -101,10 +102,14 @@ function alliance:getAtWar(targetID)
 end
 
 function alliances:declareWar(targetID)
-  local targetAlliance = alliList[targetID]
-  local target = {id = targetAlliance:getID(), status = 'War'}
+  print("The Alliance '"..self.name.." : "..self.id.."' is declaring war on '"..alliList[targetID].name.."'. ID: "..targetID)
+  local allianceOne = alliList[targetID]
+  local targetOne = {id = allianceOne:getID(), status = 'War'}
+  local allianceTwo = alliList[self.id]
+  local targetTwo = {id = allianceTwo:getID(), status = 'War'}
 
-  table.insert(self.atWar, target)
+  table.insert(targetOne, alliList[self.id].atWar)
+  table.insert(targetTwo, alliList[targetID].atWar)
 end
 
 function alliances:requestCeasefire(targetID)
@@ -132,6 +137,9 @@ function alliances:setBaseOpinion()
 
     if self.name == "Unaligned" then
 
+    elseif self.class == "Piracy" and updatingAlliance.class ~= "Piracy" and updatingAlliance.class ~= "Unaligned" then
+      print("Pirate Organisation Declaring War")
+      newAlliance:declareWar(updatingAlliance.id)
     elseif newAlliance.name ~= updatingAlliance.name then
 
     end
@@ -143,7 +151,7 @@ function alliances:setBaseOpinion()
     local otherAlliance = alliList[i]
     local opinionTable = {id = otherAlliance.id, opinionModifiers = {}, bonus = {}}
     local bonus
-    print("Self id: "..self.id, "Target Alliance id: "..otherAlliance.id)
+    print("Self id: "..self.id, "Target Alliance id: "..otherAlliance.id.." Name : "..otherAlliance.name)
     if self.name == "Unaligned" then
       bonus = {desc = "We aren't really swayed one way or another, not being a member of an alliance will do that to you", mod = 0}
       table.insert(opinionTable.bonus, bonus)
@@ -155,7 +163,7 @@ function alliances:setBaseOpinion()
     elseif otherAlliance.id ~= self.id then
       if otherAlliance.class == self.class then
         if self.class == "Piracy" then
-          bonus = {desc = "We have some appreciable similarities", mod = 10}
+          bonus = {desc = "The criminal underbelly has to have some competition", mod = -10}
           table.insert(opinionTable.bonus, bonus)
           for k = 1,#opinionTable.bonus do
             print(k..": "..opinionTable.bonus[k].mod.." is the modifier of the opinion "..opinionTable.bonus[k].desc)
@@ -175,6 +183,8 @@ function alliances:setBaseOpinion()
 
       elseif otherAlliance.class == "Piracy" then
         bonus = {desc = "Filthy Pirates", mod = -100}
+        otherAlliance:declareWar(self.id)
+        self:declareWar(otherAlliance.id)
         table.insert(opinionTable.bonus, bonus)
         for k = 1,#opinionTable.bonus do
           print(k..": "..opinionTable.bonus[k].mod.." is the modifier of the opinion "..opinionTable.bonus[k].desc)

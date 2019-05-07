@@ -36,7 +36,7 @@ function ships:_init()
   self.id = shipIdCounter
   shipIdCounter = shipIdCounter+1
   self.name = "unnamedShip"
-  self.class = classes.mediumClass
+  self.class = shipClasses.mediumClass
   self.alliance = alliances:getAlliance("Unaligned")
 
 
@@ -85,6 +85,10 @@ end
 
 function ships:getShipPos()
   return self.x, self.y, self.vec
+end
+
+function ships:setName(name)
+  self.name = name
 end
 
 function placeNPCWP(NPCShip)
@@ -210,72 +214,35 @@ function ships:behave()
   end
 end
 
-classes = {}
-classes.lightClass = {-15, -15, 15, -15, 0, 15}
-classes.mediumClass = {-20, -20, 20, -20, 0, 20}
-classes.largeClass = {-30, -30, 30, -30, 0, 30}
-classes.hugeClass = {-55, -55, 55, -55, 0, 55}
+shipClasses = {}
+shipClasses.lightClass = {-15, -15, 15, -15, 0, 15}
+shipClasses.mediumClass = {-20, -20, 20, -20, 0, 20}
+shipClasses.largeClass = {-30, -30, 30, -30, 0, 30}
+shipClasses.hugeClass = {-55, -55, 55, -55, 0, 55}
 
 function ships:setTargeting()
   --So many functions we have to make my god.
 end
 
-function ships:playerShipInit()
+function ships:shipInit(alliance)
+  self.behaviour = behave.NeutralPreset1
+  self.player = false
+  self.speedPercent = 1
+  self.alliance = alliances:getAlliance(alliance)
+  if self.alliance.class == "piracy" then
+    self.behaviour = behave.EnemyPreset1
+  end
+end
+
+function ships:playerShipInit(alliance)
   player = self
   self.player = true
   self:selectIndividual()
   self.behaviour = behave.PlayerPreset1
+  if alliance then
+    self.alliance = alliances:getAlliance(alliance)
+  end
   print(self.name.." was unselected as part of the init function, the selected status has now been returned to "..tostring(self.selected))
-end
-
-function ships:setTypeLeviathan()
-  self.name = "Leviathan"
-  self.speed = 5
-  self.turnSpeed = 0.5
-  self.accel = 0.5
-  self.decel = 0.25
-  self.class = classes.hugeClass
-  self.x = self.x-(self.class[1]*self.id)
-  self.behaviour = behave.NeutralPreset1
-end
-
-
-function ships:setTypeGoliath()
-  self.name = "Goliath"
-  self.speed = 6
-  self.turnSpeed = 1.5
-  self.class = classes.largeClass
-  self.x = self.x-(self.class[1]*self.id)
-  self.behaviour = behave.NeutralPreset1
-end
-
-function ships:setTypeKestrel()
-  self.name = "Kestrel"
-  self.speed = 10
-  self.turnSpeed = 5
-  self.class = classes.mediumClass
-  self.x = self.x-(self.class[1]*self.id)
-  self.behaviour = behave.NeutralPreset1
-end
-
-function ships:setTypePixie()
-  self.name = "Pixie"
-  self.speed = 15
-  self.turnSpeed = 7
-  self.accel = 3
-  self.decel = 2.75
-  self.class = classes.lightClass
-  self.x = self.x-(self.class[1]*self.id)
-  self.behaviour = behave.NeutralPreset1
-end
-
-function ships:setTypeRaider()
-  self.name = "Raider"
-  self.speed = 9.5
-  self.turnSpeed = 4.5
-  self.class = classes.mediumClass
-  self.x = self.x-(self.class[1]*self.id)
-  self.behaviour = behave.NeutralPreset1
 end
 
 function ships:pirateInit()
@@ -283,6 +250,66 @@ function ships:pirateInit()
   self.player = false
   self.speedPercent = 1
   self.alliance = alliances:getAlliance("Renwight's Raiders")
+end
+
+function ships:setTypeLeviathan()
+  if self.name == "unnamedShip" then
+    self.name = "Leviathan"
+  end
+  self.speed = 5
+  self.turnSpeed = 0.5
+  self.accel = 0.5
+  self.decel = 0.25
+  self.class = shipClasses.hugeClass
+  --self.x = self.x-(self.class[1]*self.id)
+  self.behaviour = behave.NeutralPreset1
+end
+
+
+function ships:setTypeGoliath()
+  if self.name == "unnamedShip" then
+    self.name = "Goliath"
+  end
+  self.speed = 6
+  self.turnSpeed = 1.5
+  self.class = shipClasses.largeClass
+  --self.x = self.x-(self.class[1]*self.id)
+  self.behaviour = behave.NeutralPreset1
+end
+
+function ships:setTypeKestrel()
+  if self.name == "unnamedShip" then
+    self.name = "Kestrel"
+  end
+  self.speed = 10
+  self.turnSpeed = 5
+  self.class = shipClasses.mediumClass
+  --self.x = self.x-(self.class[1]*self.id)
+  self.behaviour = behave.NeutralPreset1
+end
+
+function ships:setTypePixie()
+  if self.name == "unnamedShip" then
+    self.name = "Pixie"
+  end
+  self.speed = 15
+  self.turnSpeed = 7
+  self.accel = 3
+  self.decel = 2.75
+  self.class = shipClasses.lightClass
+  --self.x = self.x-(self.class[1]*self.id)
+  self.behaviour = behave.NeutralPreset1
+end
+
+function ships:setTypeRaider()
+  if self.name == "unnamedShip" then
+    self.name = "Raider"
+  end
+  self.speed = 9.5
+  self.turnSpeed = 4.5
+  self.class = shipClasses.mediumClass
+  --self.x = self.x-(self.class[1]*self.id)
+  self.behaviour = behave.NeutralPreset1
 end
 
 function shipBuilder:genLeviathanPlayerShip()
@@ -403,6 +430,69 @@ function shipBuilder:genPiratePixie()
   shipBuilder:defineBasicShipPhysics(ship,x,y)
 end
 
+function shipBuilder:genNewShip(type, alliance, hardpoints, player, name)
+  --[[
+  Types
+  1: Pixie
+  2: Kestrel
+  3: Raider
+  4: Goliath
+  5: Leviathan
+  Update this listing when you add more ship types
+  ]]
+  print("Order of setting is:\nType (Integer)\nAlliance (Name)\nHardpoints (Table of all hardpoints to install)\nplayer (boolean)\n")
+  local ship = ships.create()
+  table.insert(shipsList, ship)
+  ship = shipsList[#shipsList]
+
+  ship:_init()
+  ship:selectNewShipType(type)
+  ship:setName(name)
+  if player == true then
+    ship:playerShipInit(alliance)
+  else
+    ship:shipInit(alliance)
+  end
+
+  for i = 1,#hardpoints do
+    print(hardpoints[i].name)
+    ship:installHardpoint(hardpoints[i])
+  end
+
+  local x,y = ship:getShipPos()
+  shipBuilder:defineBasicShipPhysics(ship,x,y)
+  print('Ship created')
+end
+
+
+function ships:selectNewShipType(type)
+  --self:typeList[type] put the type functions in a table and call them via that, but we don't quite know how to do that yet so come back to this
+  --FUnction doesn't quite work, fix it later, make it workTM now
+  --[[local typeList = {}
+  typeList[1] = self:setTypePixie()
+  typeList[2] = self:setTypeKestrel()
+  typeList[3] = self:setTypeRaider()
+  typeList[4] = self:setTypeGoliath()
+  typeList[5] = self:setTypeLeviathan()]]
+  --[[for k,v in pairs(typeList) do
+    if v == type then
+      k()
+    end
+  end]]
+
+  if type == 1 then
+    self:setTypePixie()
+  elseif type == 2 then
+    self:setTypeKestrel()
+  elseif type == 3 then
+    self:setTypeRaider()
+  elseif type == 4 then
+    self:setTypeGoliath()
+  elseif type == 5 then
+    self:setTypeLeviathan()
+  end
+end
+
 function shipBuilder:defineBasicShipPhysics(ship,x,y)
   ship.body = love.physics.newBody( world, x, y, "dynamic")
 	ship.shape = love.physics.newPolygonShape(unpack(ship.class))
@@ -476,12 +566,16 @@ function ships:checkRangeofWeapons()
   for i = 1,#self.hardpoints do
     local hardpoint = self.hardpoints[i]
     --print("Running check range for: "..self.name.." ID "..self.id.." "..hardpoint.name)
+    --print(self.name)
     self.nearestInRange, self.targetList = self.hardpoints[i]:checkRange(self.alliance)
+    --print(self.nearestInRange)
+    print(self.name, self.id, #self.targetList)
+
     if self.targetList[1] then
-      --print(shipsList[self.targetList[1]].name)
+      print(shipsList[self.targetList[1]].name)
     end
     if nearestInRange == -1 then
-      local error = "ID system is misreferencing ships \nfor the hardpoints system"
+      local error = "ID system is misreferencing ships\nfor the hardpoints system"
       debugErrors = {}
       table.insert(debugErrors, error)
     end
@@ -495,7 +589,9 @@ function shipsThink()
     local ship = shipsList[i]
       --print('Name of the ship is: '..ship.name.." We're allowed to fire but we'll do it anyway without this requirement")
       ship:checkRangeofWeapons()
-      if #ship.targetList then
+      print(ship.name)
+      print(ship.name, ship.id, #ship.targetList)
+      if #ship.targetList ~= nil then
         for k = 1,#ship.hardpoints do
           --print('\n'..k..' of '..i..'\n')
         --print("do a shoot")
@@ -503,7 +599,6 @@ function shipsThink()
           ship.hardpoints[k]:runFire(ship.targetList, {}, {alliances:getAlliance("Unaligned")}, {alliances:getAlliance("Renwight's Raiders")}, 'Indiscriminate')
         end
       end
-
 
     ship.x = ship.body:getX()
     ship.y = ship.body:getY()

@@ -184,6 +184,9 @@ function weaponry:checkRange(alliance)
         if distance <= self.maxRange and distance >= self.minRange then
           --print('Weaponry in range of '..ship.name);
           table.insert(targetList, ship.id)
+          for i = 1,#targetList do
+            print(self.name, targetList[i])
+          end
           for i = 1,#nearest do
             if distance <= nearest.distance then
               nearest = {id = ship.id, distance = distance}

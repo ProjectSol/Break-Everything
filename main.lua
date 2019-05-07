@@ -2,6 +2,9 @@ lg = love.graphics
 rasterizer = love.font.newRasterizer( "assets/Montserrat-Regular.ttf", 20 )
 titleText = lg.newFont(rasterizer)
 titleText:setFilter( 'nearest', 'nearest', 1 )
+rasterizer = love.font.newRasterizer( "assets/Montserrat-Regular.ttf", 15 )
+sideBarFont = lg.newFont(rasterizer)
+sideBarFont:setFilter( 'nearest', 'nearest', 1 )
 rasterizer = love.font.newRasterizer( "assets/Montserrat-Regular.ttf", 8 )
 readingText = lg.newFont(rasterizer)
 readingText:setFilter( 'nearest', 'nearest', 1 )
@@ -69,7 +72,8 @@ function love.load()
 	Wheat = {139/255,126/255,102/255} Pink = {1,0,1}
 	Green = {34/255,139/255,34/255} Brown = {139/255,90/255,0}
 	Sepia = {94/255,38/255,18/255} UnknownShip = {189/255,195/255,199/255}
-	Default = {1,1,1}
+	BaldEagle = {1, 215/255, 0} Default = {1,1,1}
+	Gold = BaldEagle
 
 	colTab = {}
 	table.insert(colTab, Turquoise)
@@ -120,9 +124,11 @@ function love.load()
 	--basicWalls()
 	allianceSys:newAlliance("Unaligned", UnknownShip, "Unaligned")
 	allianceSys:newAlliance("Mantenian Empire", Wheat, "Government")
+	allianceSys:newAlliance("Gogol Corp", Sepia, "MegaCorp")
 	allianceSys:newAlliance("Renwight's Raiders", Red, "Piracy")
 	allianceSys:newAlliance("SuperHappyFunLand", Purple, "Piracy")
-	allianceSys:newAlliance("Gogol Corp", Sepia, "Traders")
+	allianceSys:newAlliance("The Teneret Free Planets", Green, "Government")
+	allianceSys:newAlliance("The United States of America", BaldEagle, "MegaCorp")
 	for i = 1,1 do
 		shipBuilder:genLeviathanPlayerShip()
 		shipBuilder:genGoliathPlayerShip()
@@ -135,6 +141,18 @@ function love.load()
 	end
 	hardpoints.giveBasicWeapons()
 
+	local hardpoint1 = weaponry.create()
+	hardpoint1:setName('Thermal Lance')
+	hardpoint1:setDamage(10)
+	hardpoint1:setRange(1000, 100)
+
+	local hardpoint2 = weaponry.create()
+	hardpoint2:setName('Thermal Lance')
+	hardpoint2:setDamage(10)
+	hardpoint2:setRange(1000, 100)
+	--shipsBuilder:genNewShip(type, alliance, hardpoints, player, name)
+	shipBuilder:genNewShip(5, "The Teneret Free Planets", {hardpoint1, hardpoint2}, false, "Teneret Mobile\nMining Platform")
+	shipBuilder:genNewShip(4, "The United States of America", {harpoint1}, false, "Yee Haw Mining Platform")
 
 	local player = shipBuilder:getSelectedPlayerShip()
 	camera = Camera(player.x, player.y);
@@ -298,7 +316,7 @@ function love.draw()
 
 		local mx, my = love.mouse.getPosition()
 		local wmx, wmy = camera:worldCoords(mx, my)
-		lg.print("Current FPS: "..fps.."\nScreen Position:"..mx.." "..my.."\nWorld Position: "..wmx.." "..wmy, 9, 10)
+		lg.print("Current FPS: "..fps.."\nScreen Position:"..mx.." "..my.."\nWorld Position: "..wmx.." "..wmy, lg.getWidth()-200, lg.getHeight()-50)
 
 		bodies = world:getBodies( )
 

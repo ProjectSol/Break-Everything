@@ -18,7 +18,7 @@ function shipSelection:drawSidebar(width, height)
       local unitSelectionPanel = gui.create( "button" )
       unitSelectionPanel:setSize( width/shipSelectionWidthCalibration, height/shipSelectionHeightCalibration )
       unitSelectionPanel:setPos( 0, height/(shipSelectionPositionCalibration)+((i-1)*(height/shipSelectionHeightCalibration)+1*(i-1)) )
-      unitSelectionPanel:setFont(titleText)
+      unitSelectionPanel:setFont(sideBarFont)
       unitSelectionPanel.sideBarPanel = true
       unitSelectionPanel:setTextOffset(0,17-(i*3))
       function unitSelectionPanel:paint(w, h)
