@@ -135,10 +135,15 @@ function love.load()
 		shipBuilder:genKestrelPlayerShip()
 		shipBuilder:genPixiePlayerShip()
 	end
-	for i = 1,2 do
+	for i = 1,4 do
 		shipBuilder:genPirateRaider()
-		--shipBuilder:genPirateGoliath()
+		shipBuilder:genPiratePixie()
 	end
+	for i = 1,2 do
+		shipBuilder:genPirateGoliath()
+		shipBuilder:genPirateLeviathan()
+	end
+
 	hardpoints.giveBasicWeapons()
 
 	local hardpoint1 = weaponry.create()
@@ -150,9 +155,19 @@ function love.load()
 	hardpoint2:setName('Thermal Lance')
 	hardpoint2:setDamage(10)
 	hardpoint2:setRange(1000, 100)
+
+	local hardpoint3 = weaponry.create()
+	hardpoint3:setName('Party Cannon')
+	hardpoint3:setHealing(10)
+	hardpoint3:setRange(200,10)
 	--shipsBuilder:genNewShip(type, alliance, hardpoints, player, name)
-	shipBuilder:genNewShip(5, "The Teneret Free Planets", {hardpoint1, hardpoint2}, false, "Teneret Mobile\nMining Platform")
-	shipBuilder:genNewShip(4, "The United States of America", {harpoint1}, false, "Yee Haw Mining Platform")
+	shipBuilder:genNewShip(5, "The Teneret Free Planets", {hardpoint1, hardpoint2}, false, "Teneret Mobile Mining Platform")
+	shipBuilder:genNewShip(1, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
+	shipBuilder:genNewShip(2, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
+	shipBuilder:genNewShip(4, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
+	shipBuilder:genNewShip(3, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
+
+	--shipBuilder:genNewShip(4, "The United States of America", {harpoint1}, false, "Yee Haw Mining Platform")
 
 	local player = shipBuilder:getSelectedPlayerShip()
 	camera = Camera(player.x, player.y);

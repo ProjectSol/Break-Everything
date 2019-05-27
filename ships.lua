@@ -49,7 +49,7 @@ function ships:_init()
   self.docked = {}
 
 
-  self.behaviour = behave.EnemyPreset1
+  self.behaviour = behave.NeutralPreset1
   self.validWaypoint = false
   self.player = false
   self.selected = false
@@ -207,10 +207,10 @@ end
 counter = 0
 
 function ships:behave()
-  if self.behaviour.aggression == 10 then
+  if self.behaviour.aggression == 10 and self.player == false then
     placeNPCWP(self)
   else
-
+    --placeNPCWP(self)
   end
 end
 
@@ -229,7 +229,7 @@ function ships:shipInit(alliance)
   self.player = false
   self.speedPercent = 1
   self.alliance = alliances:getAlliance(alliance)
-  if self.alliance.class == "piracy" then
+  if self.alliance.class == "Piracy" then
     self.behaviour = behave.EnemyPreset1
   end
 end
@@ -464,22 +464,24 @@ function shipBuilder:genNewShip(type, alliance, hardpoints, player, name)
   print('Ship created')
 end
 
-
 function ships:selectNewShipType(type)
   --self:typeList[type] put the type functions in a table and call them via that, but we don't quite know how to do that yet so come back to this
   --FUnction doesn't quite work, fix it later, make it workTM now
-  --[[local typeList = {}
-  typeList[1] = self:setTypePixie()
-  typeList[2] = self:setTypeKestrel()
-  typeList[3] = self:setTypeRaider()
-  typeList[4] = self:setTypeGoliath()
-  typeList[5] = self:setTypeLeviathan()]]
-  --[[for k,v in pairs(typeList) do
-    if v == type then
-      k()
+  local typeList = {}
+  typeList[1] = function () return self:setTypePixie() end
+  typeList[2] = function () return self:setTypeKestrel() end
+  typeList[3] = function () return self:setTypeRaider() end
+  typeList[4] = function () return self:setTypeGoliath() end
+  typeList[5] = function () return self:setTypeLeviathan() end
+  for k,v in pairs(typeList) do
+    if k == type then
+      v()
     end
-  end]]
+  end
+end
 
+function ships:selectNewShipTypeOldandBad(type)
+  --self:typeList[type] put the type functions in a table and call them via that, but we don't quite know how to do that yet so come back to this
   if type == 1 then
     self:setTypePixie()
   elseif type == 2 then
@@ -539,7 +541,7 @@ function drawWaypoints()
         love.graphics.setColor(1,1,1)
   			love.graphics.circle("fill", vecX+x, vecY+y, 2)
     		love.graphics.setColor(1,1,1)
-    		love.graphics.line( vecX+x, vecY+y, x, y )
+    		--love.graphics.line( vecX+x, vecY+y, x, y )
       end
 	 end
   else
@@ -554,7 +556,7 @@ function drawWaypoints()
         love.graphics.setColor(1,1,1)
   			love.graphics.circle("fill", waypoint.x, waypoint.y, 2)
     		love.graphics.setColor(1,1,1)
-    		love.graphics.line( waypoint.x, waypoint.y, x, y )
+    		--love.graphics.line( waypoint.x, waypoint.y, x, y )
       end
 	 end
   end
@@ -568,11 +570,12 @@ function ships:checkRangeofWeapons()
     --print("Running check range for: "..self.name.." ID "..self.id.." "..hardpoint.name)
     --print(self.name)
     self.nearestInRange, self.targetList = self.hardpoints[i]:checkRange(self.alliance)
+    --print(self.hardpoints[i].name, self.name)
     --print(self.nearestInRange)
-    print(self.name, self.id, #self.targetList)
+    --print(self.name, self.id, #self.targetList)
 
     if self.targetList[1] then
-      print(shipsList[self.targetList[1]].name)
+      --print(shipsList[self.targetList[1]].name)
     end
     if nearestInRange == -1 then
       local error = "ID system is misreferencing ships\nfor the hardpoints system"
@@ -587,18 +590,19 @@ end
 function shipsThink()
   for i = 1,#shipsList do
     local ship = shipsList[i]
-      --print('Name of the ship is: '..ship.name.." We're allowed to fire but we'll do it anyway without this requirement")
-      ship:checkRangeofWeapons()
-      print(ship.name)
-      print(ship.name, ship.id, #ship.targetList)
-      if #ship.targetList ~= nil then
-        for k = 1,#ship.hardpoints do
-          --print('\n'..k..' of '..i..'\n')
+    --print('Name of the ship is: '..ship.name.." We're allowed to fire but we'll do it anyway without this requirement")
+    ship:checkRangeofWeapons()
+    --print(ship.name)
+    --print(ship.name, ship.id, #ship.targetList)
+    if #ship.targetList ~= nil then
+      for k = 1,#ship.hardpoints do
+        --print('\n'..k..' of '..i..'\n')
         --print("do a shoot")
-        --targetList, Allied, Neutral, Enemy, 'Enemy / Indiscriminate / Hold'
-          ship.hardpoints[k]:runFire(ship.targetList, {}, {alliances:getAlliance("Unaligned")}, {alliances:getAlliance("Renwight's Raiders")}, 'Indiscriminate')
-        end
+        --targetList, Allied, Neutral, Enemy, 'Enemy / All / notAlly / Hold'
+        --print(ship.name, #ship.targetList)
+        ship.hardpoints[k]:runFire(ship.targetList, {}, {alliances:getAlliance("Unaligned")}, {alliances:getAlliance("Renwight's Raiders")}, 'notAlly')
       end
+    end
 
     ship.x = ship.body:getX()
     ship.y = ship.body:getY()

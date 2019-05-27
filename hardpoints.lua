@@ -116,29 +116,35 @@ function weaponry:fire(enemyId)
   --end
 end
 
+--Legal Targets = Hold, notAlly, Enemy
 function weaponry:runFire(targetList, Allied, Neutral, Enemy, legalTargets)
   --local parentShipID = self:getParentShipID()
   --print(shipsList[parentShipID].id, parentShipID, 'inside print')
   if legalTargets == 'Hold' then
     print('Holding fire')
-  elseif legalTargets == 'Indiscriminate' then
+
+  elseif legalTargets == 'notAlly' then
+    --print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     for i = 1,#targetList do
       local alliance = shipsList[targetList[i]].alliance
       for k = 1,#Neutral do
 
         if alliance == Neutral[k] and alliance ~= nil then
           --print(self.name.."Installed on: "..shipsList[parentShipID].name.."\nFiring at neutral ship: "..shipsList[targetList[i].name])
-
+          --print("*nice*")
           self:fire(targetList[i])
         end
       end
+      --print(#Enemy)
       for k = 1,#Enemy do
         if alliance == Enemy[k] and alliance ~= nil then
+          --print("*italics*")
           --print("Hardpoint Installed on: "..shipsList[self:getParentShipID()].name.."\nFiring at enemy ship: "..shipsList[targetList[i].name])
           self:fire(targetList[i])
         end
       end
     end
+
   elseif legalTargets == 'Enemy' then
     for i = 1,#targetList do
       --print('one: '..#targetList)
@@ -162,6 +168,7 @@ function weaponry:checkRange(alliance)
   --based on their actual physical presence in the world
   local nearest = {}
   local targetList = {}
+  local resetTableAtEnd = true
   local parentShip = shipsList[self.shipID]
   local x1,y1 = parentShip.body:getPosition()
   if self.shipID ~= parentShip.id then
@@ -172,9 +179,9 @@ function weaponry:checkRange(alliance)
   for i = 1,#shipsList do
     local ship = shipsList[i]
     if ship.id ~= self.shipID then
-      --if ship.alliance == alliance then
+      if ship.alliance == alliance then
 
-      --else
+      else
         local x2, y2 = ship.body:getPosition()
         --print(x1, y1, x2, y2)
         local distance = math.sqrt((x1-x2)^2+(y1-y2)^2)
@@ -185,7 +192,8 @@ function weaponry:checkRange(alliance)
           --print('Weaponry in range of '..ship.name);
           table.insert(targetList, ship.id)
           for i = 1,#targetList do
-            print(self.name, targetList[i])
+            resetTableAtEnd = false
+            --print(self.name, targetList[i])
           end
           for i = 1,#nearest do
             if distance <= nearest.distance then
@@ -195,13 +203,18 @@ function weaponry:checkRange(alliance)
           --print("assigning nearest for the first time")
           nearest = {id = ship.id, distance = distance}
         end
-        --[[for i = 1,#targetList do
-          print('Entry '..i..' in targetList is the id of the ship: '..shipsList[targetList[i]]--[[.name)
-        end]]
+          --[[for i = 1,#targetList do
+            print('Entry '..i..' in targetList is the id of the ship: '..shipsList[targetList[i]]--[[.name)
+          end]]
+        end
       end
     end
 
-  return nearest, targetList
+  if resetTableAtEnd == true then
+    return {}, {}
+  else
+    return nearest, targetList
+  end
 end
 
 function drawLas()
@@ -215,8 +228,8 @@ function drawLas()
     local y1 = lasTable[i].y1
     local y2 = lasTable[i].y2
 
-    love.graphics.line(x1, y1, x2, y2)
-    love.graphics.print(""..lasTable[i].attackerId, x2+10*lasTable[i].attackerId,y2)
+    --[[love.graphics.line(x1, y1, x2, y2)
+    love.graphics.print(""..lasTable[i].attackerId, x2+10*lasTable[i].attackerId,y2)]]
   end
   if #lasTable > 10 then
     lasTable = {}
