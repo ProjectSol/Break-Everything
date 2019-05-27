@@ -253,6 +253,7 @@ function ships:pirateInit()
 end
 
 function ships:setTypeLeviathan()
+  --General Allrounder huge class flagship
   if self.name == "unnamedShip" then
     self.name = "Leviathan"
   end
@@ -265,8 +266,23 @@ function ships:setTypeLeviathan()
   self.behaviour = behave.NeutralPreset1
 end
 
+function ships:setTypeBroodmother()
+  --Carrier type large Class ship
+  if self.name == "unnamedShip" then
+    self.name = "Broodmother"
+  end
+  self.speed = 6
+  self.turnSpeed = 1
+  self.accel = 0.75
+  self.decel = 0.30
+  self.class = shipClasses.largeClass
+  --self.x = self.x-(self.class[1]*self.id)
+  self.behaviour = behave.NeutralPreset1
+end
+
 
 function ships:setTypeGoliath()
+  --
   if self.name == "unnamedShip" then
     self.name = "Goliath"
   end

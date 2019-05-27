@@ -21,8 +21,12 @@ function stars:generateGrid()
     for j = 1,numStars do
       local xPos = love.math.random(1,starGridLength-1)
       local yPos = love.math.random(1,starGridLength-1)
-      local colour = starCols[love.math.random(1,8)]
-      local star = {x = xPos, y = yPos, colour = colour}
+      local rand = love.math.random(1,8)
+      local colour = starCols[rand]
+      local delay = love.math.random(4,10)
+      local counter = 0
+      --print(starCols[rand][1],starCols[rand][2],starCols[rand][3])
+      local star = {x = xPos, y = yPos, colour = colour, counter = counter, delay = delay, size = 1}
 
       table.insert(randomStars, star)
     end
@@ -63,8 +67,18 @@ function stars:drawGrid()
 
       for k = 1,#stars do
         --print(unpack(stars[k].colour))
-        love.graphics.setColor(unpack(stars[k].colour))
-        love.graphics.points(centreTileX+stars[k].x, centreTileY+stars[k].y)
+        stars[k].counter = stars[k].counter + 1
+        if stars[k].counter > stars[k].delay then
+          stars[k].counter = 0;
+          if stars[k].size == 1 then
+            stars[k].size = 2
+          else
+            stars[k].size = 1;
+          end
+        end
+        love.graphics.setColor(stars[k].colour)
+        --love.graphics.points(centreTileX+stars[k].x, centreTileY+stars[k].y)
+        love.graphics.circle('fill', centreTileX+stars[k].x, centreTileY+stars[k].y, stars[k].size)
       end
     end
   end

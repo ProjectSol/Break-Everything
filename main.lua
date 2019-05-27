@@ -71,7 +71,7 @@ function love.load()
 	Pumpkin = {211/255,84/255,0} Red = {232/255,77/255,63/255}
 	Wheat = {139/255,126/255,102/255} Pink = {1,0,1}
 	Green = {34/255,139/255,34/255} Brown = {139/255,90/255,0}
-	Sepia = {94/255,38/255,18/255} UnknownShip = {189/255,195/255,199/255}
+	Sepia = {	177/255, 25/255, 0} UnknownShip = {189/255,195/255,199/255}
 	BaldEagle = {1, 215/255, 0} Default = {1,1,1}
 	Gold = BaldEagle
 
@@ -104,14 +104,14 @@ function love.load()
 					 }]]
 
 
-	starCols = {	{1, 229/255, 229/255}, {222/255, 246/255, 1},
-								{222/255, 1, 228/255}, {249/255, 241/255, 222/255},
-								{249/255, 248/255, 222/255}, {228/255, 219/255, 1},
-								{1,1,1}, {188/255, 1, 231/255} }
+	starCols = {	{1, 129/255, 129/255}, {122/255, 146/255, 1},
+								{222/255, 1, 228/255}, {1, 97/255, 0},
+								{1, 246/255, 0}, {228/255, 119/255, 1},
+								{1,1,1}, {88/255, 1, 131/255} }
 
-	starRed = {1, 229/255, 229/255} starBlue = {222/255, 246/255, 1}
-	starGreen = {222/255, 1, 228/255} starOrange = {249/255, 241/255, 222/255}
-	starYellow = {249/255, 248/255, 222/255} starPurple = {228/255, 219/255, 1}
+	starRed = {1, 129/255, 129/255} starBlue = {122/255, 146/255, 1}
+	starGreen = {122/255, 1, 128/255} starOrange = {1, 97/255, 0}
+	starYellow = {1, 246/255, 0} starPurple = {228/255, 119/255, 1}
 	starWhite = {1,1,1} starTeal = {188/255, 1, 231/255}
 
 
@@ -162,9 +162,13 @@ function love.load()
 	hardpoint3:setRange(200,10)
 	--shipsBuilder:genNewShip(type, alliance, hardpoints, player, name)
 	shipBuilder:genNewShip(5, "The Teneret Free Planets", {hardpoint1, hardpoint2}, false, "Teneret Mobile Mining Platform")
+	shipBuilder:genNewShip(1, "Gogol Corp", {hardpoint3}, false, "Funtime Happy Ship")
+	shipBuilder:genNewShip(1, "Mantenian Empire", {hardpoint3}, false, "Funtime Happy Ship")
 	shipBuilder:genNewShip(1, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
-	shipBuilder:genNewShip(2, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
-	shipBuilder:genNewShip(4, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
+	shipBuilder:genNewShip(1, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
+	shipBuilder:genNewShip(1, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
+	shipBuilder:genNewShip(5, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
+	shipBuilder:genNewShip(4, "The United States of America", {hardpoint3}, false, "Funtime Happy Ship")
 	shipBuilder:genNewShip(3, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
 
 	--shipBuilder:genNewShip(4, "The United States of America", {harpoint1}, false, "Yee Haw Mining Platform")
