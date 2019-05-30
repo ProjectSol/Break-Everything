@@ -67,7 +67,7 @@ function stars:drawGrid()
 
       for k = 1,#stars do
         --print(unpack(stars[k].colour))
-        stars[k].counter = stars[k].counter + 1
+        --[[stars[k].counter = stars[k].counter + 1
         if stars[k].counter > stars[k].delay then
           stars[k].counter = 0;
           if stars[k].size == 1 then
@@ -75,7 +75,8 @@ function stars:drawGrid()
           else
             stars[k].size = 1;
           end
-        end
+        end]]
+        
         love.graphics.setColor(stars[k].colour)
         --love.graphics.points(centreTileX+stars[k].x, centreTileY+stars[k].y)
         love.graphics.circle('fill', centreTileX+stars[k].x, centreTileY+stars[k].y, stars[k].size)

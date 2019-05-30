@@ -29,7 +29,7 @@ end
 function movement:rotate(ship)
 	--print(ship.name, ship.validWaypoint, ship.accel, ship.body:getAngle())
   if ship.validWaypoint and ship.accel then
-    local rotSpeed = ship.turnSpeed/100
+    local rotSpeed = ship.turnSpeed/2
 
     local sA = ship.body:getAngle()
     local tA = getWpAngle(ship)+math.pi/2
@@ -55,11 +55,11 @@ function movement:rotate(ship)
 
 -- the actual rotation
 
-    if math.abs(diff) < rotSpeed then
-      ship.body:setAngle(tA)
-    else
-    	ship.body:setAngle(sA+(rotSpeed*direction))
-    end
+		if math.abs(diff) < rotSpeed*love.timer.getDelta() then
+			ship.body:setAngle(tA)
+		else
+			ship.body:setAngle(sA+(rotSpeed*direction*love.timer.getDelta()))
+		end
 
 -- stops it from looping endlessly and keeps the numbers looking reasonable
 
@@ -105,10 +105,10 @@ function movement:rotate2(ship)
 
 -- the actual rotation
 
-    if math.abs(diff) < rotSpeed then
+    if math.abs(diff) < rotSpeed*love.timer.getDelta() then
       ship.body:setAngle(tA)
     else
-    	ship.body:setAngle(sA+(rotSpeed*direction))
+    	ship.body:setAngle(sA+(rotSpeed*direction*love.timer.getDelta()))
     end
 
 -- stops it from looping endlessly and keeps the numbers looking reasonable

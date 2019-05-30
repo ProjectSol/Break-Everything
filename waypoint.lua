@@ -1,6 +1,12 @@
 local waypoint = {}
 NPCWaypoints = {}
 
+--[[
+
+Deprecated
+
+]]
+
 --[[function waypoint:place()
   local x = love.mouse.getX()
   local y = love.mouse.getY()

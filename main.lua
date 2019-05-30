@@ -41,7 +41,7 @@ function love.load()
 	systems = require "systems"
 	vector = require "hump/vector"
 	Camera = require "hump/camera"
-	waypoint = require "waypoint"
+	--Deprecated	waypoint = require "waypoint"
 	movement = require "movement"
 	shipBuilder = require "ships"
 	alliances = require "alliances"
@@ -71,7 +71,7 @@ function love.load()
 	Pumpkin = {211/255,84/255,0} Red = {232/255,77/255,63/255}
 	Wheat = {139/255,126/255,102/255} Pink = {1,0,1}
 	Green = {34/255,139/255,34/255} Brown = {139/255,90/255,0}
-	Sepia = {	177/255, 25/255, 0} UnknownShip = {189/255,195/255,199/255}
+	Sepia = {	204/255, 107/255, 40/255} UnknownShip = {189/255,195/255,199/255}
 	BaldEagle = {1, 215/255, 0} Default = {1,1,1}
 	Gold = BaldEagle
 
@@ -208,6 +208,7 @@ function love.update(dt)
 	if not paused then
 		world:update(dt)
 		shipsThink()
+		weaponry.updateWeaponry()
 	end
 
 	for i = 1,2 do

@@ -30,9 +30,11 @@ function weaponry:_init()
   --added should just be fineTM
 
   self.fireRate = 1
-  self.heatThreshold = 100
-  self.heatOnFire = 7
-  self.coolOff = 4
+  self.heatThreshold = 30
+  self.heatFromFiring = 10
+  self.coolOff = 2
+  self.heat = 1
+  self.fireDelay = 3
   self.maxRange = 100
   self.minRange = 20
 end
@@ -102,18 +104,22 @@ end
 
 function weaponry:fire(enemyId)
   --local nearest, targetList = weaponry:checkRange()
-  local enemyShip = shipsList[enemyId]
-  local firingShip = shipsList[self.shipID]
-  --print("Hello?")
-  --love.graphics.print("wawawawawawwa", firingShip.body:getPosition())
-  --if self.weaponType == laser then
+  if self.overHeated == false then
+    local enemyShip = shipsList[enemyId]
+    local firingShip = shipsList[self.shipID]
+    --print("Hello?")
     --love.graphics.print("wawawawawawwa", firingShip.body:getPosition())
-    local x1,y1 = firingShip.body:getPosition()
-    local x2,y2 = enemyShip.body:getPosition()
-    local newLaser = {x1 = x1, y1 = y1, x2 = x2, y2 = y2, colour = firingShip.alliance.colour, attackerId = self.shipID, defenderId = enemyId}
-    table.insert(lasTable, newLaser)
-    -- /print(#lasTable)
-  --end
+    if self.weaponType == laser then
+      love.graphics.print("wawawawawawwa", firingShip.body:getPosition())
+      enemyShip:takeDamage(self.damage)
+      self:addHeat(self.heatFromFiring)
+      local x1,y1 = firingShip.body:getPosition()
+      local x2,y2 = enemyShip.body:getPosition()
+      local newLaser = {x1 = x1, y1 = y1, x2 = x2, y2 = y2, colour = firingShip.alliance.colour, attackerId = self.shipID, defenderId = enemyId}
+      table.insert(lasTable, newLaser)
+      -- /print(#lasTable)
+    end
+  end
 end
 
 --Legal Targets = Hold, notAlly, Enemy
@@ -175,6 +181,7 @@ function weaponry:checkRange(alliance)
     print("MAJOR ERROR: Weapon System ID referencing has broken and requires fixing, range check will be cancelled");
     return -1, -1
   end
+  --print("yeet")
 
   for i = 1,#shipsList do
     local ship = shipsList[i]
@@ -185,6 +192,7 @@ function weaponry:checkRange(alliance)
         local x2, y2 = ship.body:getPosition()
         --print(x1, y1, x2, y2)
         local distance = math.sqrt((x1-x2)^2+(y1-y2)^2)
+        --print("Should be the distance: "..distance)
         --[[print("Should be the distance: "..distance)
         print(self.maxRange)
         print(self.minRange)]]
@@ -235,5 +243,37 @@ function drawLas()
     lasTable = {}
   end
 end
+
+function weaponry.updateWeaponry()
+  for i = 1,#shipsList do
+    local ship = shipsList[i]
+    for k = 1,#ship.hardpoints do
+      local hardpoint = ship.hardpoints[k]
+      print(hardpoint.name)
+      hardpoint:updateHeat()
+      hardpoint:updateFireCycle()
+    end
+  end
+end
+
+function weaponry:updateHeat()
+
+  if self.overHeated then
+    self.heat = self.heat-self.coolOff/2
+  else
+    self.heat = self.heat-self.coolOff
+  end
+
+  if self.heat < 0 then
+    self.heat = 0
+  end
+
+  if self.heat >= self.heatThreshold then
+    self.overHeated = true
+  else
+    self.overHeated = false
+  end
+end
+
 
 return hardpoints
