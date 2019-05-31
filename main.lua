@@ -129,7 +129,7 @@ function love.load()
 	allianceSys:newAlliance("SuperHappyFunLand", Purple, "Piracy")
 	allianceSys:newAlliance("The Teneret Free Planets", Green, "Government")
 	allianceSys:newAlliance("The United States of America", BaldEagle, "MegaCorp")
-	for i = 1,1 do
+	--[[for i = 1,1 do
 		shipBuilder:genLeviathanPlayerShip()
 		shipBuilder:genGoliathPlayerShip()
 		shipBuilder:genKestrelPlayerShip()
@@ -142,26 +142,33 @@ function love.load()
 	for i = 1,2 do
 		shipBuilder:genPirateGoliath()
 		shipBuilder:genPirateLeviathan()
-	end
+	end]]
+
+	shipBuilder:genKestrelPlayerShip()
+	shipBuilder:genPiratePixie()
 
 	hardpoints.giveBasicWeapons()
 
 	local hardpoint1 = weaponry.create()
+	hardpoint1:_init()
 	hardpoint1:setName('Thermal Lance')
 	hardpoint1:setDamage(10)
 	hardpoint1:setRange(1000, 100)
 
 	local hardpoint2 = weaponry.create()
+	hardpoint2:_init()
 	hardpoint2:setName('Thermal Lance')
 	hardpoint2:setDamage(10)
 	hardpoint2:setRange(1000, 100)
 
 	local hardpoint3 = weaponry.create()
 	hardpoint3:setName('Party Cannon')
+	hardpoint3:_init()
+	hardpoint3:setDamage(0)
 	hardpoint3:setHealing(10)
 	hardpoint3:setRange(200,10)
 	--shipsBuilder:genNewShip(type, alliance, hardpoints, player, name)
-	shipBuilder:genNewShip(5, "The Teneret Free Planets", {hardpoint1, hardpoint2}, false, "Teneret Mobile Mining Platform")
+	--[[shipBuilder:genNewShip(5, "The Teneret Free Planets", {hardpoint1, hardpoint2}, false, "Teneret Mobile Mining Platform")
 	shipBuilder:genNewShip(1, "Gogol Corp", {hardpoint3}, false, "Funtime Happy Ship")
 	shipBuilder:genNewShip(1, "Mantenian Empire", {hardpoint3}, false, "Funtime Happy Ship")
 	shipBuilder:genNewShip(1, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
@@ -169,7 +176,7 @@ function love.load()
 	shipBuilder:genNewShip(1, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
 	shipBuilder:genNewShip(5, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
 	shipBuilder:genNewShip(4, "The United States of America", {hardpoint3}, false, "Funtime Happy Ship")
-	shipBuilder:genNewShip(3, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")
+	shipBuilder:genNewShip(3, "SuperHappyFunLand", {hardpoint3}, false, "Funtime Happy Ship")]]
 
 	--shipBuilder:genNewShip(4, "The United States of America", {harpoint1}, false, "Yee Haw Mining Platform")
 

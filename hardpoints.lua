@@ -92,6 +92,7 @@ function hardpoints.giveBasicWeapons()
     local ship = shipsList[i]
 
     local gun = weaponry.create()
+    gun:_init()
     gun:setName('basicBlaster')
     gun:setDamage(15)
     gun:setRange(500, 20)
@@ -133,9 +134,11 @@ function weaponry:runFire(targetList, Allied, Neutral, Enemy, legalTargets)
     --print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     for i = 1,#targetList do
       local alliance = shipsList[targetList[i]].alliance
+      --print(alliance.name)
       for k = 1,#Neutral do
 
         if alliance == Neutral[k] and alliance ~= nil then
+          print(alliance.name)
           --print(self.name.."Installed on: "..shipsList[parentShipID].name.."\nFiring at neutral ship: "..shipsList[targetList[i].name])
           --print("*nice*")
           self:fire(targetList[i])
@@ -151,7 +154,7 @@ function weaponry:runFire(targetList, Allied, Neutral, Enemy, legalTargets)
       end
     end
 
-  elseif legalTargets == 'Enemy' then
+  elseif legalTargets == 'Hostile' then
     for i = 1,#targetList do
       --print('one: '..#targetList)
       local alliance = shipsList[targetList[i]].alliance
@@ -187,8 +190,9 @@ function weaponry:checkRange(alliance)
     local ship = shipsList[i]
     if ship.id ~= self.shipID then
       if ship.alliance == alliance then
-
+        --print("These ships are in the same alliance")
       else
+        --print("These ships are not in the same alliance")
         local x2, y2 = ship.body:getPosition()
         --print(x1, y1, x2, y2)
         local distance = math.sqrt((x1-x2)^2+(y1-y2)^2)
@@ -227,6 +231,7 @@ end
 
 function drawLas()
   --print(#lasTable)
+  --print("aaa")
   for i = 1,#lasTable do
     lg.setColor(unpack(lasTable[i].colour))
     lg.setLineWidth(1)
@@ -236,12 +241,12 @@ function drawLas()
     local y1 = lasTable[i].y1
     local y2 = lasTable[i].y2
 
-    --[[love.graphics.line(x1, y1, x2, y2)
-    love.graphics.print(""..lasTable[i].attackerId, x2+10*lasTable[i].attackerId,y2)]]
+    love.graphics.line(x1, y1, x2, y2)
+    love.graphics.print(""..lasTable[i].attackerId, x2+10*lasTable[i].attackerId,y2)
   end
-  if #lasTable > 10 then
+  --[[if #lasTable < -50 then
     lasTable = {}
-  end
+  end]]
 end
 
 function weaponry.updateWeaponry()
@@ -249,7 +254,10 @@ function weaponry.updateWeaponry()
     local ship = shipsList[i]
     for k = 1,#ship.hardpoints do
       local hardpoint = ship.hardpoints[k]
-      print(hardpoint.name)
+      --[[print(hardpoint.name)
+      print(hardpoint.id)
+      print(hardpoint.shipID)
+      print(hardpoint.heat)]]
       hardpoint:updateHeat()
       hardpoint:updateFireCycle()
     end
@@ -273,6 +281,14 @@ function weaponry:updateHeat()
   else
     self.overHeated = false
   end
+end
+
+function weaponry:updateFireCycle()
+
+end
+
+function weaponry:addHeat(num)
+  self.heat = self.heat+num
 end
 
 

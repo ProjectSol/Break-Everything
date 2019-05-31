@@ -94,6 +94,7 @@ end
 function placeNPCWP(NPCShip)
   --The worst possible ai I could write, lets get this bread team
   local targets = {}
+  validEnemy = false
   for i = 1,#shipsList do
     local ship = shipsList[i]
     if ship.alliance ~= NPCShip.alliance then
@@ -101,26 +102,29 @@ function placeNPCWP(NPCShip)
       local waypointVec = vector(x,y)
       local waypoint = { x=x, y=y, vec = waypointVec, ship = ship }
       table.insert(targets, waypoint)
+      validEnemy = true
     end
   end
+  if validEnemy then
+    NPCShip.waypoint = targets[1]
+    NPCShip.wpVec = targets[1].vec
+    NPCShip.validWaypoint = true
 
-  NPCShip.waypoint = targets[1]
-  NPCShip.wpVec = targets[1].vec
-  NPCShip.validWaypoint = true
 
-  for i = 1,#targets do
-    target = targets[i]
-    local dist = (NPCShip.shipVec-target.vec):len()
-    local dist2 = (NPCShip.shipVec-NPCShip.wpVec):len()
-    if dist <= dist2 then
-      NPCShip.waypoint = target
-      NPCShip.wpVec = target.vec
-      NPCShip.validWaypoint = true
+    for i = 1,#targets do
+      target = targets[i]
+      local dist = (NPCShip.shipVec-target.vec):len()
+      local dist2 = (NPCShip.shipVec-NPCShip.wpVec):len()
+      if dist <= dist2 then
+        NPCShip.waypoint = target
+        NPCShip.wpVec = target.vec
+        NPCShip.validWaypoint = true
+      end
     end
-  end
 
-  if usingMovement2 then
-    NPCShip.movement2Angle = getWpAngle(NPCShip)
+    if usingMovement2 then
+      NPCShip.movement2Angle = getWpAngle(NPCShip)
+    end
   end
 end
 
@@ -210,7 +214,7 @@ function ships:behave()
   if self.behaviour.aggression == 10 and self.player == false then
     placeNPCWP(self)
   else
-    --placeNPCWP(self)
+    placeNPCWP(self)
   end
 end
 
@@ -611,12 +615,14 @@ function shipsThink()
     --print(ship.name)
     --print(ship.name, ship.id, #ship.targetList)
     if #ship.targetList ~= nil then
+
+      --print(shipsList[1].name)
       for k = 1,#ship.hardpoints do
         --print('\n'..k..' of '..i..'\n')
         --print("do a shoot")
-        --targetList, Allied, Neutral, Enemy, 'Enemy / All / notAlly / Hold'
-        --print(ship.name, #ship.targetList)
-        ship.hardpoints[k]:runFire(ship.targetList, {}, {alliances:getAlliance("Unaligned")}, {alliances:getAlliance("Renwight's Raiders")}, 'notAlly')
+        --targetList, Allied, Neutral, Enemy, 'Hostile / All / notAlly / Hold'
+        local alliedShips, neutralShips, enemyShips = ship.alliance:returnAllianceCatagories()
+        ship.hardpoints[k]:runFire(ship.targetList, alliedShips, neutralShips, enemyShips, 'Hostile')
       end
     end
 
@@ -672,6 +678,10 @@ function ships:installHardpoint(weaponry)
   print('End num hardpoints on '..self.name..': '..#self.hardpoints)
   print(self.hardpoints[#self.hardpoints].name.." added to "..self.name.."\nship ID: "..self.id.." weapon ID: "..self.hardpoints[#self.hardpoints].id.."ship ID: "..self.hardpoints[#self.hardpoints].shipID)
   --print(self.hardpoints[1].damage)
+end
+
+function ships:takeDamage(num)
+  --print("kablooewy")
 end
 
 
