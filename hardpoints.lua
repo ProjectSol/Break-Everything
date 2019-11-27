@@ -22,6 +22,8 @@ function weaponry:_init()
   self.healing = 0
   self.weapon = true
   self.weaponType = laser --Projectile, Laser, Missle working on getting laser working first and we'll use it as a base line
+  self.projectileImage = nil;
+  self.missileImage = nil;
 
   self.name = "unnamedWeaponry"
   self.id = nil
@@ -29,12 +31,11 @@ function weaponry:_init()
   --Update your id system to handle ships being deleted,
   --added should just be fineTM
 
-  self.fireRate = 1
+  self.fireRate = 3
   self.heatThreshold = 30
   self.heatFromFiring = 10
   self.coolOff = 2
   self.heat = 1
-  self.fireDelay = 3
   self.maxRange = 100
   self.minRange = 20
 end
@@ -118,7 +119,7 @@ function weaponry:fire(enemyId)
       local x2,y2 = enemyShip.body:getPosition()
       local newLaser = {x1 = x1, y1 = y1, x2 = x2, y2 = y2, colour = firingShip.alliance.colour, attackerId = self.shipID, defenderId = enemyId}
       table.insert(lasTable, newLaser)
-      -- /print(#lasTable)
+      print("Num lasers in lasTable"..#lasTable)
     end
   end
 end
@@ -155,16 +156,20 @@ function weaponry:runFire(targetList, Allied, Neutral, Enemy, legalTargets)
     end
 
   elseif legalTargets == 'Hostile' then
-    for i = 1,#targetList do
-      --print('one: '..#targetList)
-      local alliance = shipsList[targetList[i]].alliance
-      for k = 1,#Enemy do
-        --print('two: '..#Enemy)
-        --print(alliance:getName())
-        if alliance == Enemy[k] and alliance ~= nil then
-          --print("Hey look we're shooting at: "..shipsList[targetList[i]].name)
-          --print(self.name.."Installed on: "..shipsList[self.getParentShipID()].name.."\nFiring at enemy ship: "..shipsList[targetList[i].name])
-          self:fire(targetList[i])
+    if #targetList ~= nil then
+      for i = 1,#targetList do
+        --print('one: '..#targetList)
+        local alliance = shipsList[targetList[i]].alliance
+        if Enemy ~= nil then
+          for k = 1,#Enemy do
+            --print('two: '..#Enemy)
+            --print(alliance:getName())
+            if alliance == Enemy[k] and alliance ~= nil then
+              --print("Hey look we're shooting at: "..shipsList[targetList[i]].name)
+              --print(self.name.."Installed on: "..shipsList[self.getParentShipID()].name.."\nFiring at enemy ship: "..shipsList[targetList[i].name])
+              self:fire(targetList[i])
+            end
+          end
         end
       end
     end
@@ -234,7 +239,7 @@ function drawLas()
   --print("aaa")
   for i = 1,#lasTable do
     lg.setColor(unpack(lasTable[i].colour))
-    lg.setLineWidth(1)
+    lg.setLineWidth(20)
     --print(i)
     local x1 = lasTable[i].x1
     local x2 = lasTable[i].x2

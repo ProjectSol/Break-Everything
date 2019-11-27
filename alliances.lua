@@ -104,9 +104,9 @@ end
 function alliances:declareWar(targetID)
   print("The Alliance '"..self.name.." : "..self.id.."' is declaring war on '"..alliList[targetID].name.."'. ID: "..targetID)
   local allianceOne = alliList[targetID]
-  local targetOne = {id = allianceOne:getID(), status = 'War'}
+  local targetOne = {id = allianceOne:getID(), status = true}
   local allianceTwo = alliList[self.id]
-  local targetTwo = {id = allianceTwo:getID(), status = 'War'}
+  local targetTwo = {id = allianceTwo:getID(), status = true}
 
   table.insert(targetOne, alliList[self.id].atWar)
   table.insert(targetTwo, alliList[targetID].atWar)
@@ -137,14 +137,15 @@ function alliances:setBaseOpinion()
 
     if self.name == "Unaligned" then
 
+    elseif self.class == "targetDummy" then
+      print("Dummies are 'at war' with all alliances")
+      newAlliance:declareWar(updatingAlliance.id)
     elseif self.class == "Piracy" and updatingAlliance.class ~= "Piracy" and updatingAlliance.class ~= "Unaligned" then
       print("Pirate Organisation Declaring War")
       newAlliance:declareWar(updatingAlliance.id)
     elseif newAlliance.name ~= updatingAlliance.name then
-
+      --Literally no idea what this does or why I wrote it but uh, nice
     end
-
-
   end
 
   for i = 1,#alliList do
@@ -160,6 +161,9 @@ function alliances:setBaseOpinion()
       end
       print(self.opinions, opinionTable)
       table.insert(self.opinions, opinionTable)
+
+
+
     elseif otherAlliance.id ~= self.id then
       if otherAlliance.class == self.class then
         if self.class == "Piracy" then
@@ -202,46 +206,81 @@ function alliances:setBaseOpinion()
   return "no errors encountered"
 end
 
-function alliances:returnEnemies()
+function alliances:returnAllied(targetAlliance)
+  for i = 1,#targetAlliance.allied do
+    if targetAlliance.allied[i].id ~= self.id then
 
+    end
+    print("This alliance is not in the target alliances allied table, somethings broken behind the scenes")
+    return false
+  end
 end
 
-function alliances:returnAllies()
-  local targetAlliance = self.opinions[targetAllianceId]
-  local opinion = 0
-  for i = 1,#targetAlliance.opinionModifiers do
-    opinion = opinion+targetAlliance.opinionModifiers[i].mod
-  end
 
-  if opinion < 50 then
-    print("Opinion of "..alliList[targetAllianceId].name..": "..opinion)
-
-    return opinion
-  end
-
-  print('An error occured while calculating Opinion')
-  return -1
-end
-
-function alliances:returnNeutral(targetAllianceId)
-  local targetAlliance = self.opinions[targetAllianceId]
-  local atWar
+function alliances:returnAtWar(targetAlliance)
   for i = 1,#targetAlliance.atWar do
-    if targetAlliance.atWar[i].id == self.id then
+    if targetAlliance.atWar[i].id ~= self.id then
       atWar = targetAlliance.atWar[i].status
+      return atWar
     end
   end
-  local opinion = 0
-  for i = 1,#targetAlliance.opinionModifiers do
-    opinion = opinion+targetAlliance.opinionModifiers[i].mod
-  end
-  if opinion > -50 or opinion < 50 and atWar == false then
-    print("Opinion of "..alliList[targetAllianceId].name..": "..opinion)
+  print("This alliance is not in the target alliances at war table, somethings broken behind the scenes")
+  return false
+end
 
-    return opinion
+function alliances:returnAllianceCatagories()
+  --/todo
+  local alliesTable = self:returnAllAllies()
+  local neutralTable = self:returnAllNeutral()
+  local enemyTable = self:returnAllEnemies()
+end
+
+function alliances:returnAllEnemies()
+  local alliTable = {}
+  for i = 1,#alliances do
+    local targetAlliance = alliances[i]
+    if targetAlliance.id ~= self.id then
+      local atWar = self:returnAtWar(targetAlliance)
+      if atWar == true then
+        table.insert(targetAlliance, enemyTable)
+      end
+    end
   end
-  print('An error occured while calculating Opinion')
-  return -1
+
+  return enemyTable
+end
+
+function alliances:returnAllAllies()
+  local alliTable = {}
+  for i = 1,#alliances do
+    local targetAlliance = alliances[i]
+    if targetAlliance.id ~= self.id then
+      local allied = self:returnAllied(targetAlliance)
+      if allied == true then
+        table.insert(targetAlliance, alliTable)
+      end
+    end
+  end
+
+  return alliTable
+end
+
+function alliances:returnAllNeutral(targetAllianceId)
+  local neutralTable = {}
+  for i = 1,#alliances do
+    local targetAlliance = alliances[i]
+    if targetAlliance.id ~= self.id then
+      local atWar = self:returnAtWar(targetAlliance)
+      if atWar == false then
+        local allied = self:returnAllied(targetAlliance)
+        if allied == false then
+          table.insert(targetAlliance, neutralTable)
+        end
+      end
+    end
+  end
+
+  return neutralTable
 end
 
 function alliances:returnOpinion(targetAllianceId)
@@ -250,7 +289,7 @@ function alliances:returnOpinion(targetAllianceId)
   for i = 1,#targetAlliance.opinionModifiers do
     opinion = opinion+targetAlliance.opinionModifiers[i].mod
   end
-  print("Opinion of "..alliList[targetAllianceId].name..": "..opinion)
+  --print("Opinion of "..alliList[targetAllianceId].name..": "..opinion)
 
   return opinion
 end

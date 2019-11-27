@@ -8,6 +8,8 @@ shipIdCounter = 1
 behave = {}
 behave.NeutralPreset1 = {aggression = 0, dfnd = 0,  player = false }
 
+behave.Dummy = {aggression = -99, dfnd = -99, player = false}
+
 behave.EnemyPreset1 = {aggression = 10, dfnd = 2,  player = false }
 behave.EnemyPreset2 = {aggression = 0, dfnd = 10,  player = false }
 
@@ -211,10 +213,19 @@ end
 counter = 0
 
 function ships:behave()
+  --[[print(self.name)
+  print(self.behaviour.aggression)
+  print(self.behaviour.dfnd)]]
+  if self.behaviour.aggression == -99 then
+
+    print('1')
+  end
   if self.behaviour.aggression == 10 and self.player == false then
     placeNPCWP(self)
+    return;
   else
-    placeNPCWP(self)
+    --placeNPCWP(self)
+    return;
   end
 end
 
@@ -450,6 +461,11 @@ function shipBuilder:genPiratePixie()
   shipBuilder:defineBasicShipPhysics(ship,x,y)
 end
 
+function shipBuilder:genDummyShip()
+  shipBuilder:genNewShip(3, "Dummy", {}, false, "Target Dummy")
+  shipsList[#shipsList].behvaiour = behave.Dummy
+end
+
 function shipBuilder:genNewShip(type, alliance, hardpoints, player, name)
   --[[
   Types
@@ -479,14 +495,19 @@ function shipBuilder:genNewShip(type, alliance, hardpoints, player, name)
     ship:installHardpoint(hardpoints[i])
   end
 
+  if ship.alliance.name == "Dummy" then
+    self.behaviour = behave.Dummy
+    print(behave.Dummy.aggression)
+    print(tostring(self.behaviour.aggression))
+    print("behavioursettodummy")
+  end
+
   local x,y = ship:getShipPos()
   shipBuilder:defineBasicShipPhysics(ship,x,y)
   print('Ship created')
 end
 
 function ships:selectNewShipType(type)
-  --self:typeList[type] put the type functions in a table and call them via that, but we don't quite know how to do that yet so come back to this
-  --FUnction doesn't quite work, fix it later, make it workTM now
   local typeList = {}
   typeList[1] = function () return self:setTypePixie() end
   typeList[2] = function () return self:setTypeKestrel() end
@@ -613,7 +634,7 @@ function shipsThink()
     --print('Name of the ship is: '..ship.name.." We're allowed to fire but we'll do it anyway without this requirement")
     ship:checkRangeofWeapons()
     --print(ship.name)
-    --print(ship.name, ship.id, #ship.targetList)
+    print(ship.name, ship.id, #ship.targetList)
     if #ship.targetList ~= nil then
 
       --print(shipsList[1].name)
@@ -621,8 +642,10 @@ function shipsThink()
         --print('\n'..k..' of '..i..'\n')
         --print("do a shoot")
         --targetList, Allied, Neutral, Enemy, 'Hostile / All / notAlly / Hold'
+        -- --[[
         local alliedShips, neutralShips, enemyShips = ship.alliance:returnAllianceCatagories()
         ship.hardpoints[k]:runFire(ship.targetList, alliedShips, neutralShips, enemyShips, 'Hostile')
+        --]]
       end
     end
 
