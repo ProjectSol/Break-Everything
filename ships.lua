@@ -10,7 +10,7 @@ behave.NeutralPreset1 = {aggression = 0, dfnd = 0,  player = false }
 
 behave.Dummy = {aggression = -99, dfnd = -99, player = false}
 
-behave.EnemyPreset1 = {aggression = 10, dfnd = 2,  player = false }
+behave.EnemyPreset1 = {aggression = 10, dfnd = 10,  player = false }
 behave.EnemyPreset2 = {aggression = 0, dfnd = 10,  player = false }
 
 behave.PlayerPreset1 = {aggression = 0, dfnd = 10,  player = true }
@@ -52,6 +52,7 @@ function ships:_init()
 
 
   self.behaviour = behave.NeutralPreset1
+  self.autopilot = false
   self.validWaypoint = false
   self.player = false
   self.selected = false
@@ -211,23 +212,6 @@ end
 
 
 counter = 0
-
-function ships:behave()
-  --[[print(self.name)
-  print(self.behaviour.aggression)
-  print(self.behaviour.dfnd)]]
-  if self.behaviour.aggression == -99 then
-
-    print('1')
-  end
-  if self.behaviour.aggression == 10 and self.player == false then
-    placeNPCWP(self)
-    return;
-  else
-    --placeNPCWP(self)
-    return;
-  end
-end
 
 shipClasses = {}
 shipClasses.lightClass = {-15, -15, 15, -15, 0, 15}
@@ -628,43 +612,60 @@ function ships:checkRangeofWeapons()
   --print("ran CalculateNearest "..self.nearest())
 end
 
+function ship:autoTarget()
+  for i = 1,#shipsList do
+    
+  end
+end
+
+function ship:movementOrders()
+  if usingMovement2 then
+    --Still need to untie movement from the framerate
+    --if ship.alliance ~= alliances:getAlliance("Renwight's Raiders") then
+      movement:rotate2(ship)
+      movement:movement2(ship)
+    --end
+  else
+    --if ship.alliance ~= alliances:getAlliance("Renwight's Raiders") then
+      movement:rotate(ship)
+      movement:movement(ship)
+    --end
+  end
+end
+
+function ship:combatOrders()
+  if self.player == false then
+    self:autoTarget()
+  else
+    --comment it out when you make a manual targeting systema nd decide how you'll handle this, it's likely to be simply if you aren't manually targeting something or your target is out of range retarget
+    self:autoTarget()
+  end
+  if self.combatTarget ~= -1 then
+
+  end
+end
+
+function ships:behave()
+  if self.player == false then
+    placeNPCWP(self)
+    self:movementOrders()
+    self:combatOrders()
+  else
+    if self.autopilot then
+      placeNPCWP(self) --this makes the ship behave just like an npc, you can't assign it waypoints unless you hold down mouse button.
+    end
+    self:movementOrders()
+    self:combatOrders()
+  end
+end
+
 function shipsThink()
   for i = 1,#shipsList do
     local ship = shipsList[i]
-    --print('Name of the ship is: '..ship.name.." We're allowed to fire but we'll do it anyway without this requirement")
-    ship:checkRangeofWeapons()
-    --print(ship.name)
-    print(ship.name, ship.id, #ship.targetList)
-    if #ship.targetList ~= nil then
-
-      --print(shipsList[1].name)
-      for k = 1,#ship.hardpoints do
-        --print('\n'..k..' of '..i..'\n')
-        --print("do a shoot")
-        --targetList, Allied, Neutral, Enemy, 'Hostile / All / notAlly / Hold'
-        -- --[[
-        local alliedShips, neutralShips, enemyShips = ship.alliance:returnAllianceCatagories()
-        ship.hardpoints[k]:runFire(ship.targetList, alliedShips, neutralShips, enemyShips, 'Hostile')
-        --]]
-      end
-    end
 
     ship.x = ship.body:getX()
     ship.y = ship.body:getY()
     ship.shipVec = vector.new(ship.x, ship.y)
-
-    if usingMovement2 then
-      --Still need to untie movement from the framerate
-      --if ship.alliance ~= alliances:getAlliance("Renwight's Raiders") then
-        movement:rotate2(ship)
-        movement:movement2(ship)
-      --end
-    else
-      --if ship.alliance ~= alliances:getAlliance("Renwight's Raiders") then
-        movement:rotate(ship)
-        movement:movement(ship)
-      --end
-    end
 
     ship:behave()
 
