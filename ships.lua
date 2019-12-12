@@ -614,7 +614,7 @@ end
 
 function ship:autoTarget()
   for i = 1,#shipsList do
-    
+
   end
 end
 
@@ -668,7 +668,13 @@ function shipsThink()
     ship.shipVec = vector.new(ship.x, ship.y)
 
     ship:behave()
+  end
+  resetWaypoints()
+end
 
+function resetWaypoints()
+  for i = 1,#shipsList do
+    local ship = shipsList[i]
     if ship.waypointResetTimer > 100 and ship.speedPercent == 0 and ship.resetting == true then
       ship.waypoint = nil
       ship.validWaypoint = nil
@@ -680,6 +686,7 @@ function shipsThink()
     end
   end
 end
+
 
 function shipsThinkMouse(button)
   if button == 2 then
